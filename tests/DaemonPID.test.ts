@@ -2,29 +2,34 @@ import { describe, expect, test, beforeEach, afterEach } from 'vitest';
 import fsSync from 'node:fs';
 import { DaemonPID } from 'salvatore';
 
-
 const TEST_PID_PATH = './.test.pid';
 
 const TEST_PID = {
   exists: () => fsSync.existsSync(TEST_PID_PATH),
   remove: () => TEST_PID.exists() && fsSync.rmSync(TEST_PID_PATH),
   writeFake: (pid: number, timestamp: Date, data: any) => {
-    fsSync.writeFileSync(TEST_PID_PATH, JSON.stringify({
-      pid,
-      timestamp,
-      data: data ?? '',
-    }));
-  }
-}
+    fsSync.writeFileSync(
+      TEST_PID_PATH,
+      JSON.stringify({
+        pid,
+        timestamp,
+        data: data ?? '',
+      })
+    );
+  },
+};
 
-const EXAMPLE_STOPS: { pidFile: DaemonPID, stop: () => void }[] = [];
+const EXAMPLE_STOPS: { pidFile: DaemonPID; stop: () => void }[] = [];
 const EXAMPLES = {
   a: async () => {
     const { start, stop } = await import('./fixtures/example-a/launcher.js');
 
     const { didStart, wasAlreadyRunning, pidFile } = await start();
 
-    expect({ didStart, wasAlreadyRunning }).deep.equals({ didStart: true, wasAlreadyRunning: false });
+    expect({ didStart, wasAlreadyRunning }).deep.equals({
+      didStart: true,
+      wasAlreadyRunning: false,
+    });
 
     // Sanity checks for the underlying daemon
     // (and the order of these is important)
@@ -38,44 +43,42 @@ const EXAMPLES = {
       stop: () => {
         stop();
         pidFile.delete();
-      }
+      },
     });
-    return { didStart, wasAlreadyRunning, pidFile, stop }
-  }
-}
+    return { didStart, wasAlreadyRunning, pidFile, stop };
+  },
+};
 
 function stopExamples() {
   while (EXAMPLE_STOPS.length) {
     let last = EXAMPLE_STOPS.pop();
 
     if (last?.pidFile.isRunning) {
-
       last?.stop();
     }
   }
 }
 
 function isWithinTolerance(a: number, b: number, tolerance: number) {
-  let delta = Math.abs(a - b)
-  console.log({ a, b, delta, tolerance })
+  let delta = Math.abs(a - b);
+  console.log({ a, b, delta, tolerance });
   expect(delta).toBeLessThan(tolerance);
 }
 
 describe('DaemonPID', () => {
   beforeEach(() => {
-    TEST_PID.remove()
+    TEST_PID.remove();
     stopExamples();
-
   });
   afterEach(() => {
-    TEST_PID.remove()
+    TEST_PID.remove();
     stopExamples();
   });
 
   let daemonPid: DaemonPID;
   beforeEach(() => {
-    daemonPid = new DaemonPID(TEST_PID_PATH)
-  })
+    daemonPid = new DaemonPID(TEST_PID_PATH);
+  });
 
   describe('.data', () => {
     test('a file was created', () => {
@@ -84,18 +87,25 @@ describe('DaemonPID', () => {
     });
 
     describe('arbitrary data', () => {
-      ['a string', 21, '{}', '[]', '{ hello: 2 }', { hello: 3 }, [1, 2, 3]].forEach(data => {
-
+      [
+        'a string',
+        21,
+        '{}',
+        '[]',
+        '{ hello: 2 }',
+        { hello: 3 },
+        [1, 2, 3],
+      ].forEach((data) => {
         test(`${JSON.stringify(data)}`, () => {
           daemonPid.write(data);
 
-          expect(daemonPid.data).deep.equal(data)
+          expect(daemonPid.data).deep.equal(data);
         });
       });
     });
 
     describe('non-JSON-serializable', () => {
-      [null, undefined].forEach(data => {
+      [null, undefined].forEach((data) => {
         test(`${data}`, () => {
           daemonPid.write(data);
 
@@ -103,7 +113,7 @@ describe('DaemonPID', () => {
         });
       });
     });
-  })
+  });
 
   describe('.uptime', () => {
     test('is a number', () => {
@@ -113,11 +123,10 @@ describe('DaemonPID', () => {
 
     test('probably has a non-zero value', async () => {
       daemonPid.write();
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
       expect(daemonPid.uptime).toBeGreaterThan(0);
     });
   });
-
 
   describe('.startedAt', () => {
     test('is the correct type', () => {
@@ -140,16 +149,22 @@ describe('DaemonPID', () => {
       expect(pidFile.isRunning).toBe(true);
 
       let asRecorded = new Date(pidFile.fileContents.timestamp);
-      isWithinTolerance(asRecorded.getTime(), pidFile.startedAt.getTime(), 1000 /* 1s */);
+      isWithinTolerance(
+        asRecorded.getTime(),
+        pidFile.startedAt.getTime(),
+        1000 /* 1s */
+      );
     });
   });
-
 
   describe('.isRunning', () => {
     test('the tests are running, right now', () => {
       daemonPid.write();
       expect(daemonPid.pid).toBe(process.pid);
-      expect(daemonPid.isRunning, 'isRunning: false due to timing differences').toBe(false);
+      expect(
+        daemonPid.isRunning,
+        'isRunning: false due to timing differences'
+      ).toBe(false);
     });
   });
 
@@ -170,7 +185,7 @@ describe('DaemonPID', () => {
       pidFile.kill(9);
 
       // process killing is async
-      await new Promise(r => setTimeout(r, 100));
+      await new Promise((r) => setTimeout(r, 100));
       expect(pidFile.isRunning).toBe(false);
     });
   });
@@ -181,9 +196,6 @@ describe('DaemonPID', () => {
       expect(TEST_PID.exists()).toBe(true);
       daemonPid.delete();
       expect(TEST_PID.exists()).toBe(false);
-    })
+    });
   });
-
-})
-
-
+});

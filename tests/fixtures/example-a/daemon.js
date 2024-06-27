@@ -1,10 +1,10 @@
-import { DaemonPID } from "salvatore";
+import { DaemonPID } from 'salvatore/pid';
 
-import { pidPath } from "./shared.js";
+import { pidPath } from './shared.js';
 
 const pid = new DaemonPID(pidPath);
 
-pid.write("custom-data-from-the-daemon");
+pid.write('custom-data-from-the-daemon');
 
 async function run() {
   await new Promise((resolve) => {
