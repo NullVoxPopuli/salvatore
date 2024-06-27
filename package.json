@@ -1,8 +1,8 @@
 {
   "name": "daemon-pid-esm",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "type": "module",
-  "description": "A low-level utility for making daemonized scripts / programs",
+  "description": "Simple low-level utility for making daemonized scripts / programs",
   "exports": {
     ".": "./src/index.js"
   },

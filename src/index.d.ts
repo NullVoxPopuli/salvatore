@@ -19,7 +19,12 @@ export class DaemonPID {
   read(): any;
 
   /**
-   * Retrieves the time in seconds the process referenced by the pid file has been running.
+   * Returns true if the pid file has been written
+   */
+  exists(): boolean;
+
+  /**
+   * Retrieves the time in milliseconds the process referenced by the pid file has been running.
    */
   uptime(): number;
 

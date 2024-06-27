@@ -13,7 +13,7 @@ const TEST_PID = {
       pid,
       timestamp,
       data: data ?? '',
-    }), { flag: 'wx' });
+    }));
   }
 }
 
