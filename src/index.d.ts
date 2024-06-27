@@ -10,28 +10,33 @@ export class DaemonPID {
   /**
    * Retrieves the process-id of the referenced process.
    */
-  pid(): number;
+  get pid(): number;
 
   /**
    * Reads the PID file's data from the filesystem.
    *
    */
-  read(): any;
+  get data(): any;
 
   /**
    * Returns true if the pid file has been written
    */
-  exists(): boolean;
+  get exists(): boolean;
 
   /**
    * Retrieves the time in milliseconds the process referenced by the pid file has been running.
    */
-  uptime(): number;
+  get uptime(): number;
 
   /**
    * Retrieves a Date object representing the date and time the process referenced by the pid file was started.
    */
-  started(): Date;
+  get startedAt(): Date;
+
+  /**
+   * if the associated process is currently running.
+   */
+  get isRunning(): boolean;
 
   /**
    ******************************
@@ -44,7 +49,7 @@ export class DaemonPID {
    *
    * Does not start any process.
    */
-  write(): void;
+  write(data?: unknown): void;
 
   /**
    * Deletes the associated pid file.
@@ -52,11 +57,6 @@ export class DaemonPID {
    * Does not stop any started process.
    */
   delete(): void;
-
-  /**
-   * Checks if the associated process is currently running.
-   */
-  running(): boolean;
 
   /**
   *  Sends the passed signal to the process (basically a shortcut for process.kill).

@@ -10,6 +10,8 @@
     "src"
   ],
   "scripts": {
+    "lint": "prettier --check .",
+    "format": "prettier --write .",
     "test": "vitest"
   },
   "keywords": [

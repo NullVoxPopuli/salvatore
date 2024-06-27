@@ -47,7 +47,9 @@ export class DaemonPID {
     this.#pidFilePath = pidFilePath;
   }
 
-  exists = () => fsSync.existsSync(this.#pidFilePath);
+  get exists() {
+    return fsSync.existsSync(this.#pidFilePath);
+  }
 
   /**
    * Writes out the PID file with the optional JSON-able data attached. Calls the
@@ -68,9 +70,13 @@ export class DaemonPID {
     fsSync.writeFileSync(this.#pidFilePath, json);
   };
 
-  read = () => {
+  get data() {
+    return this.#readPidFile().data;
+  }
+
+  #readPidFile = () => {
     assert(
-      this.exists(),
+      this.exists,
       `pid file ${this.#pidFilePath} does not exist, so it cannot be read.`
     );
 
@@ -84,42 +90,42 @@ export class DaemonPID {
   };
 
   delete = () => {
-    if (this.exists()) {
+    if (this.exists) {
       fsSync.rmSync(this.#pidFilePath);
     }
   };
 
-  uptime = () => {
+  get uptime() {
     let now = Date.now();
 
-    return now - this.started();
-  };
+    return now - this.startedAt;
+  }
 
-  started = () => {
-    let pidData = this.read();
+  get startedAt() {
+    let pidData = this.#readPidFile();
 
     return new Date(pidData.timestamp).getTime();
-  };
+  }
 
-  running = () => {
-    let pidData = this.read();
+  get isRunning() {
+    let pidData = this.#readPidFile();
 
     return isRunning(pidData.pid);
-  };
+  }
 
   /**
    * @param {number} signal
    */
   kill = (signal) => void process.kill(this.#pid, signal);
 
-  pid = () => {
-    let assumingPid = this.read().pid;
+  get pid() {
+    let assumingPid = this.#readPidFile().pid;
 
     assert(
-      this.running(),
+      this.isRunning,
       `The process at ${assumingPid} is no longer running.`
     );
 
     return assumingPid;
-  };
+  }
 }
