@@ -1,7 +1,14 @@
-import path from 'node:path';
-import assert from 'node:assert';
-import fsSync from 'node:fs';
-import process from 'node:process';
+import path from "node:path";
+import assert from "node:assert";
+import fsSync from "node:fs";
+import process from "node:process";
+import { execSync } from "node:child_process";
+
+/**
+ * 1s seems to be the minimum granularity we can check for.
+ * 500ms is too short.
+ */
+const MAX_TIME_BETWEEN_START_TIMESTAMPS = 1000; /* ms */
 
 function ISODate() {
   return new Date().toISOString();
@@ -17,14 +24,24 @@ function isRunning(pid) {
     process.kill(pid, 0);
     return true;
   } catch (e) {
-    if (typeof e === 'object' && e !== null && 'code' in e) {
+    if (typeof e === "object" && e !== null && "code" in e) {
       // e.code will be ESRCH if the pid doesn't exist
-      return e.code === 'EPERM';
+      return e.code === "EPERM";
     }
 
     // Unexpected!
     throw e;
   }
+}
+
+/**
+ * @param {number} pid
+ */
+function processStartedAt(pid) {
+  let buffer = execSync(`ps -o "lstart=" ${pid}`);
+  let stdout = buffer.toString();
+
+  return new Date(stdout);
 }
 
 /**
@@ -41,8 +58,8 @@ export class DaemonPID {
    * @param {string} pidFilePath
    */
   constructor(pidFilePath) {
-    assert(pidFilePath, 'a filePath for the pid file is required');
-    assert(this.#pid, 'cannot use DaemonPID without a pid');
+    assert(pidFilePath, "a filePath for the pid file is required");
+    assert(this.#pid, "cannot use DaemonPID without a pid");
 
     this.#pidFilePath = pidFilePath;
   }
@@ -61,7 +78,7 @@ export class DaemonPID {
     let json = JSON.stringify({
       pid: this.#pid,
       timestamp: ISODate(),
-      data: data ?? '',
+      data: data ?? "",
     });
 
     let folder = path.dirname(this.#pidFilePath);
@@ -74,15 +91,21 @@ export class DaemonPID {
     return this.#readPidFile().data;
   }
 
-  #readPidFile = () => {
+  get fileContents() {
     assert(
       this.exists,
-      `pid file ${this.#pidFilePath} does not exist, so it cannot be read.`
+      `pid file ${this.#pidFilePath} does not exist, so it cannot be read.`,
     );
 
     let buffer = fsSync.readFileSync(this.#pidFilePath);
     let str = buffer.toString();
     let pidData = JSON.parse(str);
+
+    return pidData;
+  }
+
+  #readPidFile = () => {
+    let pidData = this.fileContents;
 
     this.#pid = pidData.pid;
 
@@ -98,10 +121,14 @@ export class DaemonPID {
   get uptime() {
     let now = Date.now();
 
-    return now - this.startedAt;
+    return now - this.startedAt.getTime();
   }
 
   get startedAt() {
+    return processStartedAt(this.pid);
+  }
+
+  get #recordedStartedTime() {
     let pidData = this.#readPidFile();
 
     return new Date(pidData.timestamp).getTime();
@@ -110,7 +137,21 @@ export class DaemonPID {
   get isRunning() {
     let pidData = this.#readPidFile();
 
-    return isRunning(pidData.pid);
+    let runningPIDExists = isRunning(pidData.pid);
+
+    if (!runningPIDExists) {
+      return false;
+    }
+
+    // Now we need to make sure the running PID
+    // is *probably* from the same process as we expect
+    // (as PIDs can be re-used)
+    let actualStart = this.startedAt.getTime();
+    let recordedStart = this.#recordedStartedTime;
+
+    let delta = Math.abs(actualStart - recordedStart);
+
+    return delta < MAX_TIME_BETWEEN_START_TIMESTAMPS;
   }
 
   /**
@@ -119,13 +160,6 @@ export class DaemonPID {
   kill = (signal) => void process.kill(this.#pid, signal);
 
   get pid() {
-    let assumingPid = this.#readPidFile().pid;
-
-    assert(
-      this.isRunning,
-      `The process at ${assumingPid} is no longer running.`
-    );
-
-    return assumingPid;
+    return this.#readPidFile().pid;
   }
 }

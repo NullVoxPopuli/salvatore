@@ -1,3 +1,5 @@
+import type { SignalConstants } from "node:os";
+
 export class DaemonPID {
   constructor(pidFile: string);
 
@@ -6,6 +8,11 @@ export class DaemonPID {
    * DATA ACCESS
    ******************************
    */
+
+  /**
+   * Retrieves the parsed contents of the pid file with no checking or processing.
+   */
+  get fileContents(): { pid: number, timestamp: string, data: any };
 
   /**
    * Retrieves the process-id of the referenced process.
@@ -61,5 +68,5 @@ export class DaemonPID {
   /**
   *  Sends the passed signal to the process (basically a shortcut for process.kill).
   */
-  kill(signal: number): void;
+  kill(signal: number | (keyof SignalConstants & string)): void;
 }
