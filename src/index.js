@@ -34,9 +34,6 @@ function isRunning(pid) {
 export class DaemonPID {
   #pidFilePath;
   #pid = process.pid;
-  #monitors = new Set();
-  /** @type {ReturnType<typeof setInterval> | undefined} */
-  #monitorInterval;
 
   /**
    * The path of the Pid file
@@ -109,26 +106,6 @@ export class DaemonPID {
 
     return isRunning(pidData.pid);
   };
-
-  /**
-   * @param {(options: { isRunning: boolean }) => void} fn
-   * @param {number} [interval]
-   */
-  monitor = (fn, interval = 5000) => {
-    this.#monitors.add(fn);
-
-    if (!this.#monitorInterval) {
-      this.#monitorInterval = setInterval(() => {
-        let isRunning = this.running();
-
-        [...this.#monitors].forEach((fn) => {
-          fn({ isRunning });
-        });
-      }, interval);
-    }
-  };
-
-  unmonitor = () => void clearInterval(this.#monitorInterval);
 
   /**
    * @param {number} signal

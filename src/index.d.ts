@@ -62,19 +62,4 @@ export class DaemonPID {
   *  Sends the passed signal to the process (basically a shortcut for process.kill).
   */
   kill(signal: number): void;
-
-  /**
-  * Creates a monitoring interval which periodically (every five seconds by default) 
-  * checks that the associated process is still running. 
-  *
-  * This behaves similar to setInterval, in that the callback will be called every interval-time.
-  * The callback will be passed an object with a property, `isRunning` that'll be either true or false.
-  * If the value is ever false.
-  */
-  monitor(callback: (state: { isRunning: boolean }) => void, interval = 5000): void;
-
-  /**
-   * Stops monitoring the associated process.
-   */
-  unmonitor(): void;
 }
