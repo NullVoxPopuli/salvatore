@@ -1,9 +1,14 @@
 {
-  "name": "daemon-pid-esm",
+  "name": "salvatore",
   "version": "0.0.0",
-  "description": "Simple low-level utility for making daemonized scripts / programs",
+  "description": "Damon utilities for Simple daemonized scripts / programs",
   "keywords": [
     "daemon",
+    "damon",
+    "util",
+    "salvatore",
+    "vampire",
+    "diaries",
     "pid",
     "service",
     "node",
