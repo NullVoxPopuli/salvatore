@@ -1,4 +1,4 @@
-# daemon-pid-esm
+# Salvator, Daemon
 
 
 DaemonPID is a NodeJS utility module which provides straight-forward and robust PID file management; perfect for writing and reading PID files for daemonized services. It provides the ability to check or monitor the status of previously launched child processes, store additional data along with the process id, and provides process start-time verification to ensure the recorded process-id was not recycled by the OS.
@@ -37,7 +37,7 @@ Here's a basic use-case of DaemonPID in a daemonized process.
 ### Inside Child Process
 
 ```js
-import { DaemonPID } from 'daemon-pid-esm';
+import { DaemonPID } from 'salvatore';
 
 const pid = new DaemonPID('.some.file.pid');
 

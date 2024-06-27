@@ -1,4 +1,4 @@
-import { DaemonPID } from "daemon-pid-esm";
+import { DaemonPID } from "salvatore";
 import { spawn } from "node:child_process";
 import { pidPath, daemon } from "./shared.js";
 

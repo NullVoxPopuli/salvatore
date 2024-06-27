@@ -1,4 +1,4 @@
-import { DaemonPID } from "daemon-pid-esm";
+import { DaemonPID } from "salvatore";
 
 import { pidPath } from "./shared.js";
 

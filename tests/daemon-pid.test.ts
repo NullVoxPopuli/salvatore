@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, afterEach } from 'vitest';
 import fsSync from 'node:fs';
-import { DaemonPID } from 'daemon-pid-esm';
+import { DaemonPID } from 'salvatore';
 
 
 const TEST_PID_PATH = './.test.pid';
@@ -17,7 +17,7 @@ const TEST_PID = {
   }
 }
 
-const EXAMPLE_STOPS: Function[] = [];
+const EXAMPLE_STOPS: { pidFile: DaemonPID, stop: () => void }[] = [];
 const EXAMPLES = {
   a: async () => {
     const { start, stop } = await import('./fixtures/example-a/launcher.js');
@@ -33,9 +33,12 @@ const EXAMPLES = {
     expect(pidFile.pid).not.toBe(process.pid);
     expect(pidFile.data).toBe('custom-data-from-the-daemon');
 
-    EXAMPLE_STOPS.push(() => {
-      stop();
-      pidFile.delete();
+    EXAMPLE_STOPS.push({
+      pidFile,
+      stop: () => {
+        stop();
+        pidFile.delete();
+      }
     });
     return { didStart, wasAlreadyRunning, pidFile, stop }
   }
@@ -44,7 +47,11 @@ const EXAMPLES = {
 function stopExamples() {
   while (EXAMPLE_STOPS.length) {
     let last = EXAMPLE_STOPS.pop();
-    last?.();
+
+    if (last?.pidFile.isRunning) {
+
+      last?.stop();
+    }
   }
 }
 
