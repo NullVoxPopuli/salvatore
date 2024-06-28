@@ -1,4 +1,5 @@
 import { PidFile } from 'salvatore/pid';
+import fsSync from 'node:fs';
 import { spawn } from 'node:child_process';
 import { pidPath, daemon } from './shared.js';
 
@@ -21,7 +22,11 @@ export async function start() {
   } else {
     let prc = spawn(process.argv0, [daemon], {
       detached: true,
-      stdio: 'ignore',
+      stdio: [
+        'ignore',
+        fsSync.openSync('example-a.log', 'a'),
+        fsSync.openSync('example-a.log', 'a'),
+      ],
     });
 
     process.on('exit', () => {
@@ -45,4 +50,25 @@ export async function start() {
 export async function stop() {
   pidFile.kill(9);
   clean();
+}
+
+export async function status() {
+  if (!pidFile.exists) {
+    console.log(
+      `pidFile @ ${pidPath} does not exist. Cannot gather more information. The process may have exited and cleaned itself up.`
+    );
+    return;
+  }
+
+  let isRunning = pidFile.isRunning;
+  let startedAt = isRunning ? pidFile.startedAt : null;
+  let uptime = isRunning ? pidFile.uptime : null;
+
+  console.log(`
+    Running: ${isRunning}
+    PID:     ${pidFile.pid}
+    Started: ${startedAt}
+    Uptime:  ${uptime} 
+    Data:    ${JSON.stringify(pidFile.data)}
+  `);
 }
