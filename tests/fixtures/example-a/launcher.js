@@ -1,8 +1,8 @@
-import { DaemonPID } from 'salvatore/pid';
-import { spawn } from 'node:child_process';
-import { pidPath, daemon } from './shared.js';
+import { PidFile } from "salvatore/pid";
+import { spawn } from "node:child_process";
+import { pidPath, daemon } from "./shared.js";
 
-const pidFile = new DaemonPID(pidPath);
+export const pidFile = new PidFile(pidPath);
 
 function clean() {
   if (pidFile.exists) {
@@ -21,7 +21,7 @@ export async function start() {
   } else {
     let prc = spawn(process.argv0, [daemon], {
       detached: true,
-      stdio: 'ignore',
+      stdio: "ignore",
     });
     // Required to allow the daemon to keep running
     // when the launcher-process exits
@@ -39,4 +39,5 @@ export async function start() {
 
 export async function stop() {
   pidFile.kill(9);
+  clean();
 }

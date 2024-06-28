@@ -1,2 +1,2 @@
-export { DaemonPID } from "./pid.js";
+export { PidFile } from "./pid.js";
 export { Daemon } from "./damon.js";

@@ -1,6 +1,6 @@
 import type { SignalConstants } from 'node:os';
 
-export class DaemonPID {
+export class PidFile {
   constructor(pidFile: string);
 
   /**

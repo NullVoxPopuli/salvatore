@@ -37,9 +37,9 @@ Here's a basic use-case of DaemonPID in a daemonized process.
 ### Inside Child Process
 
 ```js
-import { DaemonPID } from 'salvatore';
+import { PidFile } from 'salvatore';
 
-const pid = new DaemonPID('.some.file.pid');
+const pid = new PidFile('.some.file.pid');
 
 // writes-out the pid file
 pid.write();
@@ -139,105 +139,6 @@ Currently, there's a single example in `examples/`.
 ### Basic Use Case Example
 
 The basic example offers a very simple CLI in `cli.js` and the canonical "Hello World" web server as a service to be daemonized (in `server.js`). Just `cd` into that directory and run `node cli.js start` to start the server, `node cli.js stop` to stop it, and `node cli.js status` to see the current status of the server process.
-
-
-## API
-
-### write(callback, data)
-
-Creates the PID file and writes it to the filesystem.
-
-#### Arguments
-
-- `callback(err)` - Called when the write is complete with a possible error.
-- `data` - Additional (JSON-able) data to store.
-
--------------
-
-### read(callback)
-
-Reads the PID file from the filesystem.
-
-#### Arguments
-
-- `callback(err, data)` - Called with possible error and data stored using `write()`.
-
--------------
-
-### delete(callback)
-
-Deletes the associated pid file.
-
-#### Arguments
-
-- `callback(err)` - Called with possible error.
-
--------------
-
-### running(callback)
-
-Checks if the associated process is currently running.
-
-#### Arguments
-
-- `callback(err, running, data)` - Called with possible error, boolean `running` indicating if the process is running and additionally the `data` stored in the pid file using `write()`.
-
--------------
-
-### uptime(callback)
-
-Retrieves the time in seconds the process referenced by the pid file has been running.
-
-#### Arguments
-
-- `callback(err, seconds)` - Called with possible error and process uptime in seconds.
-
--------------
-
-### started(callback)
-
-Retrieves a `Date` object representing the date and time the process referenced by the pid file was started.
- 
-#### Arguments
-
-- `callback(err, date)` - Called with possible error and the date/time the process was started.
-
--------------
-
-### kill(signal, callback)
-
-Sends the passed signal to the process (basically a shortcut for process.kill).
-
-#### Arguments
-
-- `signal` - The signal to send, 'SIGTERM', 'SIGKILL', etc.
-- `callback(err)` - Called if an error occurred with passing the signal, or if the process is not running.
-
--------------
-
-### pid(callback)
-
-Retrieves the process-id of the referenced process.
-
-#### Arguments
-
-- `callback(err, pid)` - Callback passed a possible error and the pid of the running process. An error pass if the process is not running.
-
--------------
-
-### monitor(callback, interval = 5000)
-
-Creates a monitoring interval which periodically (every five seconds by default) checks that the associated process is still running. If it stops, for any reason, or it cannot access the pid file, the `callback` function is called.
-
-#### Arguments
-
-- `callback(err)` - Called if the process stops or an error occurs accessing the pid file. If `err` is undefined, then no error occurred and the process is not running (see example above).
-
--------------
-
-### unmonitor()
-
-Stops monitoring the associated process.
 
 
 -----------------

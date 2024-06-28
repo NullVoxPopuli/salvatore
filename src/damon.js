@@ -1,13 +1,15 @@
-import { DaemonPID } from "./pid.js";
+import { PidFile } from "./pid.js";
+import assert from "node:assert";
 import { spawn } from "node:child_process";
 import fsSync from "node:fs";
+import { waitFor } from "./utils.js";
 
 /**
  * @typedef {object} Options
  * @property {string} pidFilePath
- * @property {string} runWith
- * @property {number} timeout
- * @property {() => boolean} restartWhen
+ * @property {string} [ runWith ]
+ * @property {number} [ timeout ]
+ * @property {() => boolean} [ restartWhen ]
  */
 
 /**
@@ -28,7 +30,7 @@ export class Daemon {
   constructor(scriptPath, options) {
     this.#scriptPath = scriptPath;
 
-    this.#pidFile = new DaemonPID(options.pidFilePath);
+    this.#pidFile = new PidFile(options.pidFilePath);
     this.#pidFilePath = options.pidFilePath;
     this.#runWith = options.runWith || process.argv0;
     this.#timeout = options.timeout ?? 2_000;
@@ -69,32 +71,37 @@ export class Daemon {
     /**
      * Wait for the pidFile to be written, error if it doesn't
      */
-    await Promise.race([
-      new Promise((_, reject) => {
-        setTimeout(
-          () => reject(`Timed out waiting for ${this.#pidFile} to exist`),
-          this.#timeout,
-        );
-      }),
-      new Promise((resolve) => {
-        let interval = setInterval(() => {
-          if (fsSync.existsSync(this.#pidFilePath)) {
-            clearInterval(interval);
-            resolve(null);
-          }
-        }, 10);
-      }),
-    ]);
+    await waitFor(
+      () => fsSync.existsSync(this.#pidFilePath),
+      `Timed out waiting for ${this.#pidFilePath} to exist`,
+      this.#timeout,
+    );
 
     return this.info;
   };
 
-  stop = async () => {};
+  stop = async () => {
+    assert(
+      this.info.pid !== process.pid,
+      `Unexpectedly, the Daemon's PID is our pid. This means we can't stop the process without stopping ourselves`,
+    );
+
+    this.#pidFile.kill(9);
+
+    await waitFor(
+      () => !fsSync.existsSync(this.#pidFilePath),
+      `Timed out waiting for ${this.#pidFilePath} to be deleted`,
+      this.#timeout,
+    );
+
+    this.#pidFile.delete();
+  };
 
   get info() {
     return {
       pid: this.#pidFile.pid,
       data: this.#pidFile.data,
+      startedAt: this.#pidFile.startedAt,
     };
   }
 }

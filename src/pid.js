@@ -1,8 +1,8 @@
-import path from 'node:path';
-import assert from 'node:assert';
-import fsSync from 'node:fs';
-import process from 'node:process';
-import { execSync } from 'node:child_process';
+import path from "node:path";
+import assert from "node:assert";
+import fsSync from "node:fs";
+import process from "node:process";
+import { isRunning, processStartedAt } from "./process-utils.js";
 
 /**
  * 1s seems to be the minimum granularity we can check for.
@@ -15,40 +15,10 @@ function ISODate() {
 }
 
 /**
- * @param {number} pid
- */
-function isRunning(pid) {
-  try {
-    // No Signal is sent, but error checking still occurs
-    // https://unix.stackexchange.com/questions/169898/what-does-kill-0-do
-    process.kill(pid, 0);
-    return true;
-  } catch (e) {
-    if (typeof e === 'object' && e !== null && 'code' in e) {
-      // e.code will be ESRCH if the pid doesn't exist
-      return e.code === 'EPERM';
-    }
-
-    // Unexpected!
-    throw e;
-  }
-}
-
-/**
- * @param {number} pid
- */
-function processStartedAt(pid) {
-  let buffer = execSync(`ps -o "lstart=" ${pid}`);
-  let stdout = buffer.toString();
-
-  return new Date(stdout);
-}
-
-/**
  * Implements a pid file management class capable of monitoring processes using
  * pid files stored at known locations. Designed for use in daemonized processes.
  */
-export class DaemonPID {
+export class PidFile {
   #pidFilePath;
   #pid = process.pid;
 
@@ -58,8 +28,8 @@ export class DaemonPID {
    * @param {string} pidFilePath
    */
   constructor(pidFilePath) {
-    assert(pidFilePath, 'a filePath for the pid file is required');
-    assert(this.#pid, 'cannot use DaemonPID without a pid');
+    assert(pidFilePath, "a filePath for the pid file is required");
+    assert(this.#pid, "cannot use DaemonPID without a pid");
 
     this.#pidFilePath = pidFilePath;
   }
@@ -78,7 +48,7 @@ export class DaemonPID {
     let json = JSON.stringify({
       pid: this.#pid,
       timestamp: ISODate(),
-      data: data ?? '',
+      data: data ?? "",
     });
 
     let folder = path.dirname(this.#pidFilePath);
@@ -94,7 +64,7 @@ export class DaemonPID {
   get fileContents() {
     assert(
       this.exists,
-      `pid file ${this.#pidFilePath} does not exist, so it cannot be read.`
+      `pid file ${this.#pidFilePath} does not exist, so it cannot be read.`,
     );
 
     let buffer = fsSync.readFileSync(this.#pidFilePath);

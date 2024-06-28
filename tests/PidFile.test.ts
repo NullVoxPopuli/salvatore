@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach, afterEach } from 'vitest';
 import fsSync from 'node:fs';
-import { DaemonPID } from 'salvatore';
+import { PidFile } from 'salvatore';
 
 const TEST_PID_PATH = './.test.pid';
 
@@ -19,7 +19,7 @@ const TEST_PID = {
   },
 };
 
-const EXAMPLE_STOPS: { pidFile: DaemonPID; stop: () => void }[] = [];
+const EXAMPLE_STOPS: { pidFile: PidFile; stop: () => void }[] = [];
 const EXAMPLES = {
   a: async () => {
     const { start, stop } = await import('./fixtures/example-a/launcher.js');
@@ -61,11 +61,10 @@ function stopExamples() {
 
 function isWithinTolerance(a: number, b: number, tolerance: number) {
   let delta = Math.abs(a - b);
-  console.log({ a, b, delta, tolerance });
   expect(delta).toBeLessThan(tolerance);
 }
 
-describe('DaemonPID', () => {
+describe('PidFile', () => {
   beforeEach(() => {
     TEST_PID.remove();
     stopExamples();
@@ -75,9 +74,9 @@ describe('DaemonPID', () => {
     stopExamples();
   });
 
-  let daemonPid: DaemonPID;
+  let daemonPid: PidFile;
   beforeEach(() => {
-    daemonPid = new DaemonPID(TEST_PID_PATH);
+    daemonPid = new PidFile(TEST_PID_PATH);
   });
 
   describe('.data', () => {
