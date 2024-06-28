@@ -34,7 +34,7 @@ export async function start() {
 
     // Spawn detaches, so we need a way to wait for
     // the creation of the pid file.
-    await new Promise((r) => setTimeout(r, 50));
+    await new Promise((r) => setTimeout(r, 1000));
 
     state.didStart = true;
   }
