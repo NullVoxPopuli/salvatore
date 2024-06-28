@@ -109,6 +109,10 @@ export class PidFile {
   }
 
   get isRunning() {
+    if (!this.exists) {
+      return false;
+    }
+
     let pidData = this.#readPidFile();
 
     let runningPIDExists = isRunning(pidData.pid);

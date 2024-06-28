@@ -6,6 +6,12 @@ export default defineConfig({
       enabled: true,
       provider: 'v8',
     },
-    // ... Specify options here.
+    poolOptions: {
+      /**
+       * Due to PID files, we can't exactly run tests in parallel that
+       * operate on the same examples.
+       */
+      threads: { singleThread: true },
+    },
   },
 });

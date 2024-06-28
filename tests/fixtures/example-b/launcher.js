@@ -3,31 +3,40 @@ import { daemon as scriptPath, pidPath } from './shared.js';
 import assert from 'node:assert';
 import { isRunning } from '../../../src/process-utils.js';
 
-let daemon = new Daemon(scriptPath, { pidFilePath: pidPath });
+export const daemon = new Daemon(scriptPath, {
+  pidFilePath: pidPath,
+  // logFile: "example-b.log",
+});
 
-const pidFile = new PidFile(pidPath);
+export const pidFile = new PidFile(pidPath);
 
-function clean() {
+export async function clean() {
   if (pidFile.exists) {
     if (pidFile.isRunning) {
-      pidFile.kill(9);
+      await daemon.stop();
     }
   }
+  pidFile.delete();
 }
 
 export async function start() {
-  clean();
+  if (pidFile.exists) {
+    console.log('PidFile already exists');
+  }
   return await daemon.ensureStarted();
 }
 
 export async function stop() {
   // If there is no pid file, we cannot be confident that we are going to kill the correct process
-  if (!pidFile.exists) return;
+  if (!pidFile.exists) {
+    console.log('PidFile does not exist, nothing to stop');
+    return;
+  }
 
   let pid = daemon.info.pid;
-  if (!isRunning(daemon.info.pid)) {
+  if (!isRunning(pid)) {
     console.log(`Process @ ${pid} is not running`);
-    clean();
+    await clean();
     return;
   }
 
@@ -39,8 +48,12 @@ export async function stop() {
 
     await daemon.stop();
   } finally {
-    clean();
+    await clean();
   }
+}
+
+export function isDaemonRunning() {
+  return pidFile.isRunning;
 }
 
 export async function status() {

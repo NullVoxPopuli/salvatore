@@ -1,6 +1,7 @@
 import { describe, expect, test, beforeEach, afterEach } from 'vitest';
 import fsSync from 'node:fs';
 import { PidFile } from 'salvatore';
+import { waitOneSecond, wait } from './helpers.ts';
 
 const TEST_PID_PATH = './.test.pid';
 
@@ -122,7 +123,7 @@ describe('PidFile', () => {
 
     test('probably has a non-zero value', async () => {
       daemonPid.write();
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await wait(10);
       expect(daemonPid.uptime).toBeGreaterThan(0);
     });
   });
@@ -157,7 +158,9 @@ describe('PidFile', () => {
   });
 
   describe('.isRunning', () => {
-    test('the tests are running, right now', () => {
+    test('the tests are running, right now', async () => {
+      await waitOneSecond();
+
       daemonPid.write();
       expect(daemonPid.pid).toBe(process.pid);
       expect(
@@ -184,7 +187,7 @@ describe('PidFile', () => {
       pidFile.kill(9);
 
       // process killing is async
-      await new Promise((r) => setTimeout(r, 100));
+      await wait(100);
       expect(pidFile.isRunning).toBe(false);
     });
   });

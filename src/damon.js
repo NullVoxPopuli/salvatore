@@ -1,6 +1,6 @@
 import { PidFile } from './pid.js';
 import assert from 'node:assert';
-import { spawn } from 'node:child_process';
+import { execSync, spawn } from 'node:child_process';
 import fsSync from 'node:fs';
 import { waitFor } from './utils.js';
 
@@ -9,6 +9,7 @@ import { waitFor } from './utils.js';
  * @property {string} pidFilePath
  * @property {string} [ runWith ]
  * @property {number} [ timeout ]
+ * @property {string} [logFile]
  * @property {() => boolean} [ restartWhen ]
  */
 
@@ -22,6 +23,7 @@ export class Daemon {
   #pidFile;
   #timeout;
   #restartWhen;
+  #logFilePath;
 
   /**
    * @param {string} scriptPath
@@ -35,6 +37,7 @@ export class Daemon {
     this.#runWith = options.runWith || process.argv0;
     this.#timeout = options.timeout ?? 2_000;
     this.#restartWhen = options.restartWhen;
+    this.#logFilePath = options.logFile;
   }
 
   /**
@@ -42,7 +45,7 @@ export class Daemon {
    *
    * Will error if the pid file did not get created or if the process didn't start or exited too early.
    *
-   * @returns {Promise<{ pid: number, data: unknown }>}
+   * @returns {Promise<Daemon['info']>}
    */
   ensureStarted = async () => {
     let forceRestart = this.#restartWhen?.() ?? false;
@@ -59,8 +62,13 @@ export class Daemon {
 
     let theDaemon = spawn(this.#runWith, [this.#scriptPath], {
       detached: true,
-      // stdio: "ignore",
-      stdio: 'inherit',
+      stdio: this.#logFilePath
+        ? [
+            'ignore',
+            fsSync.openSync(this.#logFilePath, 'a'),
+            fsSync.openSync(this.#logFilePath, 'a'),
+          ]
+        : 'ignore',
     });
 
     /**
@@ -78,6 +86,14 @@ export class Daemon {
       this.#timeout
     );
 
+    // let spawnedPid = theDaemon.pid;
+    // let actual = this.#pidFile.pid;
+
+    // assert(
+    //   spawnedPid === actual,
+    //   `The PID of the spawned daemon, ${spawnedPid}, does not match the pid in the corresponding PID file, ${actual}, at ${this.#pidFilePath}`
+    // )
+
     return this.info;
   };
 
@@ -91,18 +107,13 @@ export class Daemon {
       this.#pidFile.kill('SIGKILL');
     }
 
+    let pid = this.#pidFile.pid;
     await waitFor(
-      () => !fsSync.existsSync(this.#pidFilePath),
+      () => !this.#pidFile.isRunning,
       () => {
-        let stillRunning = '';
-        if (this.#pidFile.isRunning) {
-          stillRunning = `Process is @ ${this.#pidFile.pid} and is still running (Uptime: ${this.#pidFile.uptime}ms).`;
-        }
-        return (
-          `Timed out waiting for ${this.#pidFilePath} to be deleted. ` +
-          `It is the daemonized process' responsibility to delete this file.` +
-          ` ${stillRunning}`
-        );
+        let buffer = execSync(`ps ux -p ${pid}`);
+        console.log(buffer.toString());
+        return `Timed out waiting for the process @ ${pid} to stop.`;
       },
       this.#timeout
     );
