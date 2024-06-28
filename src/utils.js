@@ -8,15 +8,16 @@ export async function waitFor(
   conditionFn,
   rejectMessage,
   timeout,
-  checkEvery = 10 /* ms */,
+  checkEvery = 10 /* ms */
 ) {
   /** @type {ReturnType<typeof setTimeout>} */
   let errorTimeout;
-  
+
   await Promise.race([
     new Promise((_, reject) => {
       errorTimeout = setTimeout(() => {
-        let msg = typeof rejectMessage === 'function' ? rejectMessage() : rejectMessage;
+        let msg =
+          typeof rejectMessage === 'function' ? rejectMessage() : rejectMessage;
         reject(msg);
       }, timeout);
     }),

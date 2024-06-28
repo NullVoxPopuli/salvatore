@@ -100,7 +100,7 @@ export class Daemon {
         }
         return (
           `Timed out waiting for ${this.#pidFilePath} to be deleted. ` +
-          `It is the daemonized process' responsibility to delete this file.` + 
+          `It is the daemonized process' responsibility to delete this file.` +
           ` ${stillRunning}`
         );
       },

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { start, stop, status } from "./launcher.js";
+import { start, stop, status } from './launcher.js';
 
 const [_initiator, _script, ...args] = process.argv;
 
@@ -8,11 +8,11 @@ const [command] = args;
 
 async function main() {
   switch (command) {
-    case "start":
+    case 'start':
       return start();
-    case "stop":
+    case 'stop':
       return stop();
-    case "status":
+    case 'status':
       return status();
   }
 }

@@ -8,7 +8,7 @@ describe('Daemon', () => {
   describe('example-b', () => {
     afterEach(async () => {
       await stop();
-    })
+    });
 
     describe('ensureStarted', () => {
       test('it starts a process that was not started previously', async () => {
@@ -26,7 +26,6 @@ describe('Daemon', () => {
         let newInfo = await start();
 
         expect(newInfo).deep.equals(originalInfo);
-
       });
     });
 

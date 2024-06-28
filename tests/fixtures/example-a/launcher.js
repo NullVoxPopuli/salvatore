@@ -1,6 +1,6 @@
-import { PidFile } from "salvatore/pid";
-import { spawn } from "node:child_process";
-import { pidPath, daemon } from "./shared.js";
+import { PidFile } from 'salvatore/pid';
+import { spawn } from 'node:child_process';
+import { pidPath, daemon } from './shared.js';
 
 export const pidFile = new PidFile(pidPath);
 
@@ -21,13 +21,13 @@ export async function start() {
   } else {
     let prc = spawn(process.argv0, [daemon], {
       detached: true,
-      stdio: "ignore",
+      stdio: 'ignore',
     });
 
-    process.on("exit", () => {
+    process.on('exit', () => {
       if (prc.exitCode === null) {
         throw new Error(
-          `Process for ${pidPath} is still running. Expected it to be cleaned up!`,
+          `Process for ${pidPath} is still running. Expected it to be cleaned up!`
         );
       }
     });

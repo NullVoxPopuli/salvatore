@@ -1,12 +1,12 @@
-import { PidFile } from "salvatore/pid";
+import { PidFile } from 'salvatore/pid';
 
-import { pidPath } from "./shared.js";
+import { pidPath } from './shared.js';
 
 const pid = new PidFile(pidPath);
 
-pid.write("custom-data-from-the-daemon");
+pid.write('custom-data-from-the-daemon');
 
-process.on("exit", () => {
+process.on('exit', () => {
   pid.delete();
 });
 

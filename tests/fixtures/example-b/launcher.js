@@ -32,7 +32,6 @@ export async function stop() {
   }
 
   try {
-
     assert(
       pid !== process.pid,
       `Somehow the Daemon's PID is our pid. This means we can't stop the process without stopping ourselves`
