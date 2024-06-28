@@ -6,6 +6,10 @@ const pid = new PidFile(pidPath);
 
 pid.write("custom-data-from-the-daemon");
 
+process.on("exit", () => {
+  pid.delete();
+});
+
 async function run() {
   await new Promise((resolve) => {
     setTimeout(() => {

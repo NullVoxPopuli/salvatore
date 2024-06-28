@@ -1,8 +1,8 @@
-import { PidFile } from "./pid.js";
-import assert from "node:assert";
-import { spawn } from "node:child_process";
-import fsSync from "node:fs";
-import { waitFor } from "./utils.js";
+import { PidFile } from './pid.js';
+import assert from 'node:assert';
+import { spawn } from 'node:child_process';
+import fsSync from 'node:fs';
+import { waitFor } from './utils.js';
 
 /**
  * @typedef {object} Options
@@ -59,7 +59,8 @@ export class Daemon {
 
     let theDaemon = spawn(this.#runWith, [this.#scriptPath], {
       detached: true,
-      stdio: "ignore",
+      // stdio: "ignore",
+      stdio: 'inherit',
     });
 
     /**
@@ -73,8 +74,8 @@ export class Daemon {
      */
     await waitFor(
       () => fsSync.existsSync(this.#pidFilePath),
-      `Timed out waiting for ${this.#pidFilePath} to exist`,
-      this.#timeout,
+      `Timed out waiting for ${this.#pidFilePath} to exist. It's possible the process prematurely exited and cleaned up after itself.`,
+      this.#timeout
     );
 
     return this.info;
@@ -83,25 +84,39 @@ export class Daemon {
   stop = async () => {
     assert(
       this.info.pid !== process.pid,
-      `Unexpectedly, the Daemon's PID is our pid. This means we can't stop the process without stopping ourselves`,
+      `Unexpectedly, the Daemon's PID is our pid. This means we can't stop the process without stopping ourselves`
     );
 
-    this.#pidFile.kill(9);
+    if (this.#pidFile.isRunning) {
+      this.#pidFile.kill('SIGKILL');
+    }
 
     await waitFor(
       () => !fsSync.existsSync(this.#pidFilePath),
-      `Timed out waiting for ${this.#pidFilePath} to be deleted`,
-      this.#timeout,
+      () => {
+        let stillRunning = '';
+        if (this.#pidFile.isRunning) {
+          stillRunning = `Process is @ ${this.#pidFile.pid} and is still running (Uptime: ${this.#pidFile.uptime}ms).`;
+        }
+        return (
+          `Timed out waiting for ${this.#pidFilePath} to be deleted. ` +
+          `It is the daemonized process' responsibility to delete this file.` + 
+          ` ${stillRunning}`
+        );
+      },
+      this.#timeout
     );
-
-    this.#pidFile.delete();
   };
 
   get info() {
+    let isRunning = this.#pidFile.isRunning;
+    let startedAt = isRunning ? this.#pidFile.startedAt : null;
+
     return {
       pid: this.#pidFile.pid,
       data: this.#pidFile.data,
-      startedAt: this.#pidFile.startedAt,
+      startedAt,
+      isRunning,
     };
   }
 }

@@ -23,9 +23,14 @@ export async function start() {
       detached: true,
       stdio: "ignore",
     });
-    // Required to allow the daemon to keep running
-    // when the launcher-process exits
-    prc.unref();
+
+    process.on("exit", () => {
+      if (prc.exitCode === null) {
+        throw new Error(
+          `Process for ${pidPath} is still running. Expected it to be cleaned up!`,
+        );
+      }
+    });
 
     // Spawn detaches, so we need a way to wait for
     // the creation of the pid file.

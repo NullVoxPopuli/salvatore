@@ -1,4 +1,4 @@
-# Salvator, Daemon
+# Salvatore, Daemon
 
 
 DaemonPID is a NodeJS utility module which provides straight-forward and robust PID file management; perfect for writing and reading PID files for daemonized services. It provides the ability to check or monitor the status of previously launched child processes, store additional data along with the process id, and provides process start-time verification to ensure the recorded process-id was not recycled by the OS.
@@ -132,9 +132,28 @@ It's easy to implement a simple status-monitor as a separate process.
 
 ## Examples
 
-Currently, there's a single example in `examples/`. 
+See the `tests/fixtures` directory for examples.
 
-(Examples are not included in the npm package. Please download or clone the repo at [https://github.com/JoshuaToenyes/daemon-pid](https://github.com/JoshuaToenyes/daemon-pid) for the example files.)
+Each example has a CLI with these commands:
+```bash
+./cli.js start # starts the example daemon
+./cli.js stop # stops the example daemon
+./cli.js status # prints status about the daemon
+```
+
+Example:
+```bash 
+salvatore/tests/fixtures/example-b
+❯ ./cli.js status
+
+    Running: true
+    PID:     49443
+    Started: Fri Jun 28 2024 12:35:32 GMT-0400 (Eastern Daylight Time)
+    Uptime:  4783086 
+    Data:    "custom-data-from-the-daemon"
+  
+
+```
 
 ### Basic Use Case Example
 
