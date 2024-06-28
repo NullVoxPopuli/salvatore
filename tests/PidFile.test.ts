@@ -181,23 +181,23 @@ describe('PidFile', () => {
     test('can be killed', async () => {
       const { pidFile } = await EXAMPLES.a();
 
-      expect(pidFile.exists).toBe(true);
-      expect(pidFile.isRunning).toBe(true);
+      expect(pidFile.exists, 'pid file exists').toBe(true);
+      expect(pidFile.isRunning, 'process is running').toBe(true);
 
       pidFile.kill(9);
 
       // process killing is async
-      await wait(100);
-      expect(pidFile.isRunning).toBe(false);
+      await wait(1000);
+      expect(pidFile.isRunning, 'process is not running').toBe(false);
     });
   });
 
   describe('.delete()', () => {
     test('it deletes the file', () => {
       daemonPid.write();
-      expect(TEST_PID.exists()).toBe(true);
+      expect(TEST_PID.exists(), 'pid file exists').toBe(true);
       daemonPid.delete();
-      expect(TEST_PID.exists()).toBe(false);
+      expect(TEST_PID.exists(), 'pid file does not exist').toBe(false);
     });
   });
 });
