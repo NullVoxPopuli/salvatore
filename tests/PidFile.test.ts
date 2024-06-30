@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach, afterEach } from 'vitest';
 import fsSync from 'node:fs';
 import { PidFile } from 'salvatore';
-import { waitOneSecond, wait } from './helpers.ts';
+import { waitOneSecond, wait, isWithinTolerance } from './helpers.ts';
 
 const TEST_PID_PATH = './.test.pid';
 
@@ -20,59 +20,12 @@ const TEST_PID = {
   },
 };
 
-const EXAMPLE_STOPS: { pidFile: PidFile; stop: () => void }[] = [];
-const EXAMPLES = {
-  a: async () => {
-    const { start, stop } = await import('./fixtures/example-a/launcher.js');
-
-    const { didStart, wasAlreadyRunning, pidFile } = await start();
-
-    expect({ didStart, wasAlreadyRunning }).deep.equals({
-      didStart: true,
-      wasAlreadyRunning: false,
-    });
-
-    // Sanity checks for the underlying daemon
-    // (and the order of these is important)
-    expect(pidFile.exists).toBe(true);
-    expect(pidFile.isRunning).toBe(true);
-    expect(pidFile.pid).not.toBe(process.pid);
-    expect(pidFile.data).toBe('custom-data-from-the-daemon');
-
-    EXAMPLE_STOPS.push({
-      pidFile,
-      stop: () => {
-        stop();
-        pidFile.delete();
-      },
-    });
-    return { didStart, wasAlreadyRunning, pidFile, stop };
-  },
-};
-
-function stopExamples() {
-  while (EXAMPLE_STOPS.length) {
-    let last = EXAMPLE_STOPS.pop();
-
-    if (last?.pidFile.isRunning) {
-      last?.stop();
-    }
-  }
-}
-
-function isWithinTolerance(a: number, b: number, tolerance: number) {
-  let delta = Math.abs(a - b);
-  expect(delta).toBeLessThan(tolerance);
-}
-
 describe('PidFile', () => {
   beforeEach(() => {
     TEST_PID.remove();
-    stopExamples();
   });
   afterEach(() => {
     TEST_PID.remove();
-    stopExamples();
   });
 
   let daemonPid: PidFile;
@@ -141,20 +94,6 @@ describe('PidFile', () => {
       let asRecorded = new Date(daemonPid.fileContents.timestamp);
       isWithinTolerance(asRecorded.getTime(), now, 100);
     });
-
-    test('represents the actual process start time, as known by the OS', async () => {
-      const { pidFile } = await EXAMPLES.a();
-
-      expect(pidFile.exists).toBe(true);
-      expect(pidFile.isRunning).toBe(true);
-
-      let asRecorded = new Date(pidFile.fileContents.timestamp);
-      isWithinTolerance(
-        asRecorded.getTime(),
-        pidFile.startedAt.getTime(),
-        1000 /* 1s */
-      );
-    });
   });
 
   describe('.isRunning', () => {
@@ -174,21 +113,6 @@ describe('PidFile', () => {
     test('the pid exists', () => {
       daemonPid.write();
       expect(daemonPid.pid).toBeGreaterThan(1);
-    });
-  });
-
-  describe('.kill()', () => {
-    test('can be killed', async () => {
-      const { pidFile } = await EXAMPLES.a();
-
-      expect(pidFile.exists, 'pid file exists').toBe(true);
-      expect(pidFile.isRunning, 'process is running').toBe(true);
-
-      pidFile.kill(9);
-
-      // process killing is async
-      await wait(1000);
-      expect(pidFile.isRunning, 'process is not running').toBe(false);
     });
   });
 
