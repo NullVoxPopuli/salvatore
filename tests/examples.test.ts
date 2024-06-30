@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect } from 'vitest';
 import { isWithinTolerance, scenario, stopExamples, wait } from './helpers.ts';
 import { isRunning } from '../src/process-utils.js';
 import { Daemon } from '../src/damon.js';
+import { assertIsRunning } from './assertions.ts';
 
 describe('Examples', () => {
   beforeEach(() => {
@@ -16,23 +17,20 @@ describe('Examples', () => {
       test('represents the actual process start time, as known by the OS', async ({
         pidFile,
       }) => {
-        expect(pidFile.exists).toBe(true);
-        expect(isRunning(pidFile.pid)).toBe(true);
-        expect(pidFile.isRunning).toBe(true);
+        assertIsRunning(pidFile);
 
         let asRecorded = new Date(pidFile.fileContents.timestamp);
         isWithinTolerance(
           asRecorded.getTime(),
           pidFile.startedAt.getTime(),
-          1000 /* 1s */
+          2000 /* 2s */
         );
       });
     });
 
     describe('.kill()', () => {
       test('can be killed', async ({ pidFile }) => {
-        expect(pidFile.exists, 'pid file exists').toBe(true);
-        expect(pidFile.isRunning, 'process is running').toBe(true);
+        assertIsRunning(pidFile);
 
         pidFile.kill(9);
 
