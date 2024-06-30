@@ -86,6 +86,12 @@ export class Daemon {
       this.#timeout
     );
 
+    await waitFor(
+      () => this.#pidFile.isRunning,
+      `Timed out waiting for ${this.#pidFile.command} to start. It's possible the process prematurely exited and cleaned up after itself. Expected PID: ${this.#pidFile.pid}`,
+      this.#timeout
+    );
+
     return this.info;
   };
 
