@@ -86,14 +86,6 @@ export class Daemon {
       this.#timeout
     );
 
-    // let spawnedPid = theDaemon.pid;
-    // let actual = this.#pidFile.pid;
-
-    // assert(
-    //   spawnedPid === actual,
-    //   `The PID of the spawned daemon, ${spawnedPid}, does not match the pid in the corresponding PID file, ${actual}, at ${this.#pidFilePath}`
-    // )
-
     return this.info;
   };
 
@@ -126,6 +118,7 @@ export class Daemon {
     return {
       pid: this.#pidFile.pid,
       data: this.#pidFile.data,
+      command: this.#pidFile.command,
       startedAt,
       isRunning,
     };
