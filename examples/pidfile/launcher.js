@@ -2,6 +2,7 @@ import { PidFile } from 'salvatore/pid';
 import fsSync from 'node:fs';
 import { spawn } from 'node:child_process';
 import { pidPath, daemon } from './shared.js';
+import { isRunning } from 'salvatore/__private__/process-utils';
 
 export const pidFile = new PidFile(pidPath);
 
@@ -24,8 +25,8 @@ export async function start() {
       detached: true,
       stdio: [
         'ignore',
-        fsSync.openSync('example-a.log', 'a'),
-        fsSync.openSync('example-a.log', 'a'),
+        fsSync.openSync('example.log', 'a'),
+        fsSync.openSync('example.log', 'a'),
       ],
     });
 
@@ -41,6 +42,11 @@ export async function start() {
     // the creation of the pid file.
     await new Promise((r) => setTimeout(r, 1000));
 
+    if (!isRunning(pidFile.pid)) {
+      throw new Error(
+        `Process for ${pidPath} @ ${pidFile.pid} did not start or exited too early`
+      );
+    }
     state.didStart = true;
   }
 

@@ -33,6 +33,11 @@ describe('PidFile', () => {
     daemonPid = new PidFile(TEST_PID_PATH);
   });
 
+  test('it exists', () => {
+    expect(PidFile).toBeTruthy();
+    expect(typeof PidFile).toBe('function');
+  });
+
   describe('.data', () => {
     test('a file was created', () => {
       daemonPid.write();

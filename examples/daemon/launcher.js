@@ -1,7 +1,7 @@
 import { Daemon, PidFile } from 'salvatore';
 import { daemon as scriptPath, pidPath } from './shared.js';
 import assert from 'node:assert';
-import { isRunning } from '../../../src/process-utils.js';
+import { isRunning } from 'salvatore/__private__/process-utils';
 
 export const daemon = new Daemon(scriptPath, {
   pidFilePath: pidPath,
@@ -20,9 +20,6 @@ export async function clean() {
 }
 
 export async function start() {
-  if (pidFile.exists) {
-    console.log('PidFile already exists');
-  }
   return await daemon.ensureStarted();
 }
 

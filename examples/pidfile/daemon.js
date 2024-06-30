@@ -1,7 +1,6 @@
 import { PidFile } from 'salvatore/pid';
 
 import { pidPath } from './shared.js';
-import assert from 'node:assert';
 
 const pidFile = new PidFile(pidPath);
 pidFile.write('custom-data-from-the-daemon');
@@ -9,7 +8,7 @@ const pid = pidFile.pid;
 
 const log = (msg) =>
   console.log(
-    `example-b [${pid}: ${pidFile.exists && pidFile.isRunning ? 'running' : 'not running'}] : ${msg}`
+    `PidFile [${pid}: ${pidFile.exists && pidFile.isRunning ? 'running' : 'not running'}] : ${msg}`
   );
 
 log(`wrote pid file.`);
@@ -24,10 +23,11 @@ process.on('exit', () => {
 async function run() {
   log(`starting timeout`);
   setInterval(() => {
-    log(`Running for ${(Date.now() - start) / 1000}s`);
+    log(`Has been running for ${(Date.now() - start) / 1000}s (so far)`);
   }, 1000);
   await new Promise((resolve) => {
     setTimeout(() => {
+      log('ending timeout');
       resolve(null);
       process.exit(0);
       // This process should "hang" for 2s, and then exit itself

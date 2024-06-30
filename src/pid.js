@@ -7,8 +7,9 @@ import { isRunning, processStartedAt } from './process-utils.js';
 /**
  * 1s seems to be the minimum granularity we can check for.
  * 500ms is too short.
+ * Often, 1s is too short.
  */
-const MAX_TIME_BETWEEN_START_TIMESTAMPS = 1000; /* ms */
+const MAX_TIME_BETWEEN_START_TIMESTAMPS = 5000; /* ms */
 
 function ISODate() {
   return new Date().toISOString();

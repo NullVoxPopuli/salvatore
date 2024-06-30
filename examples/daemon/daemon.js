@@ -14,7 +14,7 @@ assert(pid === process.pid, `Pid from file matches process pid.`);
 
 const log = (msg) =>
   console.log(
-    `example-b [${pid}: ${pidFile.exists && pidFile.isRunning ? 'running' : 'not running'}] : ${msg}`
+    `Daemon [${pid}: ${pidFile.exists && pidFile.isRunning ? 'running' : 'not running'}] : ${msg}`
   );
 
 log(`wrote pid file.`);

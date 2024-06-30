@@ -159,6 +159,18 @@ salvatore/tests/fixtures/example-b
 
 The basic example offers a very simple CLI in `cli.js` and the canonical "Hello World" web server as a service to be daemonized (in `server.js`). Just `cd` into that directory and run `node cli.js start` to start the server, `node cli.js stop` to stop it, and `node cli.js status` to see the current status of the server process.
 
+### Contributing
+
+1. fork it
+2. change it
+3. pr it
+4. 🎉 collab time 🎉
+
+
+#### Notes
+
+Each test that operates on the examples folder runs in its own tmp directory. This is because we need a unique pid file for each test, and in order to run the tests in parallel, this is the only way to not run in to issues with one test reading another's pid file.
+
 
 -----------------
 

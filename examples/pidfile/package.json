@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "type": "module",
+  "name": "@example/pidfile",
+  "version": "0.0.0",
+  "dependencies": {
+    "salvatore": "workspace:^"
+  }
+}
