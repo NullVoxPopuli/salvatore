@@ -103,7 +103,7 @@ describe('PidFile', () => {
 
   describe('.isRunning', () => {
     test('the tests are running, right now', async () => {
-      await waitOneSecond();
+      await wait(5_000);
 
       daemonPid.write();
       expect(daemonPid.pid).toBe(process.pid);

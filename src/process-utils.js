@@ -54,6 +54,16 @@ export function processStartedAt(pid) {
 }
 
 /**
+ * @param {number} pid
+ * @returns {string}
+ */
+export function processCommand(pid) {
+  let buffer = execSync(`ps -p ${pid} -o args --no-headers`);
+  let stdout = buffer.toString();
+  return stdout;
+}
+
+/**
  *
  * @param {unknown} x
  * @returns {x is NonNullable<object>}

@@ -78,6 +78,7 @@ describe('Examples', () => {
 
       async function setup(start: () => ReturnType<Daemon['ensureStarted']>) {
         info = await start();
+        console.log(info);
 
         expect(info.pid).not.toEqual(process.pid);
         assertIsRunning(info.pid);

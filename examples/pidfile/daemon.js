@@ -11,6 +11,7 @@ const log = (msg) =>
     `PidFile [${pid}: ${pidFile.exists && pidFile.isRunning ? 'running' : 'not running'}] : ${msg}`
   );
 
+log(process.argv.join(', '));
 log(`wrote pid file.`);
 log(`process.pid: ${process.pid}`);
 let start = Date.now();

@@ -2,12 +2,17 @@ import path from 'node:path';
 import assert from 'node:assert';
 import fsSync from 'node:fs';
 import process from 'node:process';
-import { isRunning, processStartedAt } from './process-utils.js';
+import {
+  isRunning,
+  processCommand,
+  processStartedAt,
+} from './process-utils.js';
 
 /**
  * 1s seems to be the minimum granularity we can check for.
  * 500ms is too short.
  * Often, 1s is too short.
+ *        especially in CI.
  */
 const MAX_TIME_BETWEEN_START_TIMESTAMPS = 5000; /* ms */
 
@@ -46,9 +51,12 @@ export class PidFile {
    * @param {unknown} data
    */
   write = (data) => {
+    let [initiator, script] = process.argv;
+
     let json = JSON.stringify({
       pid: this.#pid,
       timestamp: ISODate(),
+      command: `${initiator} ${script}`,
       data: data ?? '',
     });
 
@@ -95,6 +103,10 @@ export class PidFile {
     return now - this.startedAt.getTime();
   }
 
+  get command() {
+    return this.fileContents.command;
+  }
+
   get startedAt() {
     assert(
       isRunning(this.pid),
@@ -119,6 +131,16 @@ export class PidFile {
     let runningPIDExists = isRunning(pidData.pid);
 
     if (!runningPIDExists) {
+      return false;
+    }
+
+    // Now ne need to see if the COMMAND was the same
+    // if not, then we're not running, and we
+    // don't need to check the time.
+    let actualCommand = processCommand(pidData.pid);
+    let recordedCommand = pidData.command;
+    let sameCommand = actualCommand === recordedCommand;
+    if (!sameCommand) {
       return false;
     }
 
