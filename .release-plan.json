@@ -1,0 +1,21 @@
+{
+  "solution": {
+    "salvatore": {
+      "impact": "minor",
+      "oldVersion": "0.0.0",
+      "newVersion": "0.1.0",
+      "constraints": [
+        {
+          "impact": "minor",
+          "reason": "Appears in changelog section :rocket: Enhancement"
+        },
+        {
+          "impact": "patch",
+          "reason": "Appears in changelog section :memo: Documentation"
+        }
+      ],
+      "pkgJSONPath": "./package.json"
+    }
+  },
+  "description": "## Release (2024-07-01)\n\nsalvatore 0.1.0 (minor)\n\n#### :rocket: Enhancement\n* `salvatore`\n  * [#1](https://github.com/NullVoxPopuli/salvatore/pull/1) Initial implementation ([@NullVoxPopuli](https://github.com/NullVoxPopuli))\n\n#### :memo: Documentation\n* `salvatore`\n  * [#4](https://github.com/NullVoxPopuli/salvatore/pull/4) Update README ([@NullVoxPopuli](https://github.com/NullVoxPopuli))\n  * [#3](https://github.com/NullVoxPopuli/salvatore/pull/3) Set License to MIT ([@NullVoxPopuli](https://github.com/NullVoxPopuli))\n\n#### Committers: 1\n- [@NullVoxPopuli](https://github.com/NullVoxPopuli)\n"
+}

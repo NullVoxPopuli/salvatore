@@ -1,6 +1,6 @@
 {
   "name": "salvatore",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Damon utilities for Simple daemonized scripts / programs",
   "keywords": [
     "daemon",
