@@ -1,4 +1,5 @@
-# daemon-pid-esm
+# Salvatore, Daemon
+
 
 DaemonPID is a NodeJS utility module which provides straight-forward and robust PID file management; perfect for writing and reading PID files for daemonized services. It provides the ability to check or monitor the status of previously launched child processes, store additional data along with the process id, and provides process start-time verification to ensure the recorded process-id was not recycled by the OS.
 
@@ -36,9 +37,9 @@ Here's a basic use-case of DaemonPID in a daemonized process.
 ### Inside Child Process
 
 ```js
-import { DaemonPID } from 'daemon-pid-esm';
+import { PidFile } from 'salvatore';
 
-const pid = new DaemonPID('.some.file.pid');
+const pid = new PidFile('.some.file.pid');
 
 // writes-out the pid file
 pid.write();
@@ -131,114 +132,46 @@ It's easy to implement a simple status-monitor as a separate process.
 
 ## Examples
 
-Currently, there's a single example in `examples/`. 
+See the `tests/fixtures` directory for examples.
 
-(Examples are not included in the npm package. Please download or clone the repo at [https://github.com/JoshuaToenyes/daemon-pid](https://github.com/JoshuaToenyes/daemon-pid) for the example files.)
+Each example has a CLI with these commands:
+```bash
+./cli.js start # starts the example daemon
+./cli.js stop # stops the example daemon
+./cli.js status # prints status about the daemon
+```
+
+Example:
+```bash 
+salvatore/tests/fixtures/example-b
+❯ ./cli.js status
+
+    Running: true
+    PID:     49443
+    Started: Fri Jun 28 2024 12:35:32 GMT-0400 (Eastern Daylight Time)
+    Uptime:  4783086 
+    Data:    "custom-data-from-the-daemon"
+  
+
+```
 
 ### Basic Use Case Example
 
 The basic example offers a very simple CLI in `cli.js` and the canonical "Hello World" web server as a service to be daemonized (in `server.js`). Just `cd` into that directory and run `node cli.js start` to start the server, `node cli.js stop` to stop it, and `node cli.js status` to see the current status of the server process.
 
+### Contributing
 
-## API
+1. fork it
+2. change it
+3. pr it
+4. 🎉 collab time 🎉
 
-### write(callback, data)
 
-Creates the PID file and writes it to the filesystem.
+#### Notes
 
-#### Arguments
-
-- `callback(err)` - Called when the write is complete with a possible error.
-- `data` - Additional (JSON-able) data to store.
-
--------------
-
-### read(callback)
-
-Reads the PID file from the filesystem.
-
-#### Arguments
-
-- `callback(err, data)` - Called with possible error and data stored using `write()`.
-
--------------
-
-### delete(callback)
-
-Deletes the associated pid file.
-
-#### Arguments
-
-- `callback(err)` - Called with possible error.
-
--------------
-
-### running(callback)
-
-Checks if the associated process is currently running.
-
-#### Arguments
-
-- `callback(err, running, data)` - Called with possible error, boolean `running` indicating if the process is running and additionally the `data` stored in the pid file using `write()`.
-
--------------
-
-### uptime(callback)
-
-Retrieves the time in seconds the process referenced by the pid file has been running.
-
-#### Arguments
-
-- `callback(err, seconds)` - Called with possible error and process uptime in seconds.
-
--------------
-
-### started(callback)
-
-Retrieves a `Date` object representing the date and time the process referenced by the pid file was started.
- 
-#### Arguments
-
-- `callback(err, date)` - Called with possible error and the date/time the process was started.
-
--------------
-
-### kill(signal, callback)
-
-Sends the passed signal to the process (basically a shortcut for process.kill).
-
-#### Arguments
-
-- `signal` - The signal to send, 'SIGTERM', 'SIGKILL', etc.
-- `callback(err)` - Called if an error occurred with passing the signal, or if the process is not running.
-
--------------
-
-### pid(callback)
-
-Retrieves the process-id of the referenced process.
-
-#### Arguments
-
-- `callback(err, pid)` - Callback passed a possible error and the pid of the running process. An error pass if the process is not running.
-
--------------
-
-### monitor(callback, interval = 5000)
-
-Creates a monitoring interval which periodically (every five seconds by default) checks that the associated process is still running. If it stops, for any reason, or it cannot access the pid file, the `callback` function is called.
-
-#### Arguments
-
-- `callback(err)` - Called if the process stops or an error occurs accessing the pid file. If `err` is undefined, then no error occurred and the process is not running (see example above).
-
--------------
-
-### unmonitor()
-
-Stops monitoring the associated process.
+Each test that operates on the examples folder runs in its own tmp directory. This is because we need a unique pid file for each test, and in order to run the tests in parallel, this is the only way to not run in to issues with one test reading another's pid file.
 
 
 -----------------
 
-Original project: [daemon-pid](https://github.com/JoshuaToenyes/daemon-pid)
+Original project: [daemon-pid](https://github.com/JoshuaToenyes/daemon-pid) - [published code](https://www.npmjs.com/package/daemon-pid?activeTab=code)
