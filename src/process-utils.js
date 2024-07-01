@@ -23,26 +23,6 @@ export function isRunning(pid) {
 }
 
 /**
- *
- * @param {number} pid
- * @param {number | string} signal
- */
-export function killWithoutError(pid, signal) {
-  try {
-    process.kill(pid, signal);
-  } catch (e) {
-    if (isObject(e)) {
-      if ('code' in e) {
-        if (e.code === 'ESRCH') {
-          return;
-        }
-      }
-    }
-    throw e;
-  }
-}
-
-/**
  * @param {number} pid
  * @returns {Date}
  */

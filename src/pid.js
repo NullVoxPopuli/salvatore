@@ -137,10 +137,12 @@ export class PidFile {
     // Now ne need to see if the COMMAND was the same
     // if not, then we're not running, and we
     // don't need to check the time.
-    let actualCommand = processCommand(pidData.pid);
-    let recordedCommand = pidData.command;
-    let sameCommand = actualCommand === recordedCommand;
-    console.log({ sameCommand, actualCommand, recordedCommand });
+    let actualCommand = processCommand(pidData.pid).trim();
+    let recordedCommand = pidData.command.trim();
+    // Example:
+    //   actual:    node path/to/script.js
+    //   recorded:  /opt/hostedtoolcache/node/22.3.0/x64/bin/node path/to/script.js
+    let sameCommand = recordedCommand.endsWith(actualCommand);
     if (!sameCommand) {
       return false;
     }
