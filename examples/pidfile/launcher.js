@@ -3,6 +3,7 @@ import fsSync from 'node:fs';
 import { spawn } from 'node:child_process';
 import { pidPath, daemon } from './shared.js';
 import { isRunning } from 'salvatore/__private__/process-utils';
+import { waitFor } from 'salvatore/__private__/utils';
 
 export const pidFile = new PidFile(pidPath);
 
@@ -40,13 +41,12 @@ export async function start() {
 
     // Spawn detaches, so we need a way to wait for
     // the creation of the pid file.
-    await new Promise((r) => setTimeout(r, 1000));
+    await waitFor(
+      () => isRunning(pidFile.pid),
+      `Process for ${pidPath} @ ${pidFile.pid} did not start or exited`,
+      2000
+    );
 
-    if (!isRunning(pidFile.pid)) {
-      throw new Error(
-        `Process for ${pidPath} @ ${pidFile.pid} did not start or exited too early`
-      );
-    }
     state.didStart = true;
   }
 
