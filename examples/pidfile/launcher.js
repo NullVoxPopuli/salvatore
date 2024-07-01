@@ -39,6 +39,12 @@ export async function start() {
       }
     });
 
+    await waitFor(
+      () => fsSync.existsSync(pidPath),
+      `Timed out waiting for ${pidPath} to exist. It's possible the process prematurely exited and cleaned up after itself.`,
+      2000
+    );
+
     // Spawn detaches, so we need a way to wait for
     // the creation of the pid file.
     await waitFor(
