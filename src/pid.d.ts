@@ -46,6 +46,12 @@ export class PidFile {
   get isRunning(): boolean;
 
   /**
+   * The command that the PID is related to.
+   * This, combined with startedAt help deter
+   */
+  get command(): string;
+
+  /**
    ******************************
    * MANAGEMENT
    ******************************

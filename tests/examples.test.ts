@@ -70,6 +70,7 @@ describe('Examples', () => {
         expect(newInfo.startedAt).toStrictEqual(originalInfo.startedAt);
         expect(newInfo.pid).toStrictEqual(originalInfo.pid);
         expect(newInfo.data).toStrictEqual(originalInfo.data);
+        expect(newInfo.command).toStrictEqual(originalInfo.command);
       });
     });
 
