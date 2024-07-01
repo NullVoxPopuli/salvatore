@@ -1,4 +1,4 @@
-import { PidFile } from 'salvatore/pid';
+import { PidFile } from 'salvatore';
 import fsSync from 'node:fs';
 import { spawn } from 'node:child_process';
 import { pidPath, daemon } from './shared.js';
