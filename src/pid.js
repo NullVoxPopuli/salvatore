@@ -140,6 +140,7 @@ export class PidFile {
     let actualCommand = processCommand(pidData.pid);
     let recordedCommand = pidData.command;
     let sameCommand = actualCommand === recordedCommand;
+    console.log({ sameCommand, actualCommand, recordedCommand });
     if (!sameCommand) {
       return false;
     }
