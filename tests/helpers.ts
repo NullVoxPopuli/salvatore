@@ -47,7 +47,7 @@ async function tmp(fn: (tmpDir: string) => unknown) {
     tmpDir = fsSync.mkdtempSync(root);
     await fn(tmpDir);
   } finally {
-    if (process.env.CI) {
+    if (process.env['CI']) {
       if (tmpDir) {
         fsSync.rmSync(tmpDir, { recursive: true });
       }

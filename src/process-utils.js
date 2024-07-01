@@ -44,7 +44,7 @@ export function processStartedAt(pid) {
  */
 export function processCommand(pid) {
   return isMac
-    ? runSync(`ps -p $pid -o%args=`)
+    ? runSync(`ps -p ${pid} -o args=`)
     : runSync(`ps -p ${pid} -o args --no-headers`);
 }
 

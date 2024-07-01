@@ -106,7 +106,10 @@ describe('PidFile', () => {
       await wait(5_000);
 
       daemonPid.write();
-      expect(daemonPid.pid).toBe(process.pid);
+      expect(
+        daemonPid.pid,
+        'because this process wrote the pid, it is the same process that is running tests'
+      ).toBe(process.pid);
       expect(
         daemonPid.isRunning,
         'isRunning: false due to timing differences'
