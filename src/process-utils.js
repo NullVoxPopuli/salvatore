@@ -1,4 +1,10 @@
 import { execSync } from 'node:child_process';
+import os from 'node:os';
+
+/**
+ * Mac has a special version of `ps` and does not take all the same arguments.
+ */
+const isMac = os.platform() === 'darwin';
 
 /**
  * @param {number} pid
@@ -27,8 +33,7 @@ export function isRunning(pid) {
  * @returns {Date}
  */
 export function processStartedAt(pid) {
-  let buffer = execSync(`ps -o "lstart=" ${pid}`);
-  let stdout = buffer.toString();
+  let stdout = runSync(`ps -o "lstart=" ${pid}`);
 
   return new Date(stdout);
 }
@@ -38,7 +43,17 @@ export function processStartedAt(pid) {
  * @returns {string}
  */
 export function processCommand(pid) {
-  let buffer = execSync(`ps -p ${pid} -o args --no-headers`);
+  return isMac
+    ? runSync(`ps -p $pid -o%args=`)
+    : runSync(`ps -p ${pid} -o args --no-headers`);
+}
+
+/**
+ * @param {string} command
+ * @returns {string}
+ */
+function runSync(command) {
+  let buffer = execSync(command);
   let stdout = buffer.toString();
   return stdout;
 }
