@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { PidFile } from 'salvatore/pid';
+import { PidFile } from 'salvatore';
 import fsSync from 'node:fs';
 
 import { pidPath } from './shared.js';
