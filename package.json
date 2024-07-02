@@ -47,8 +47,9 @@
     "declarations"
   ],
   "scripts": {
-    "prepare": "pnpm prepack",
-    "prepack": "tsc --declaration --declarationDir ./declarations --emitDeclarationOnly --noEmit false",
+    "prepare": "pnpm build",
+    "prepack": "pnpm build",
+    "build": "tsc --declaration --declarationDir ./declarations --emitDeclarationOnly --noEmit false",
     "format": "prettier --write .",
     "lint": "concurrently 'pnpm:lint:*'",
     "lint:package": "publint",

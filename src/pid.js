@@ -1,12 +1,12 @@
-import path from "node:path";
-import assert from "node:assert";
-import fsSync from "node:fs";
-import process from "node:process";
+import path from 'node:path';
+import assert from 'node:assert';
+import fsSync from 'node:fs';
+import process from 'node:process';
 import {
   isRunning,
   processCommand,
   processStartedAt,
-} from "./process-utils.js";
+} from './process-utils.js';
 
 /**
  * 1s seems to be the minimum granularity we can check for.
@@ -34,8 +34,8 @@ export class PidFile {
    * @param {string} pidFilePath
    */
   constructor(pidFilePath) {
-    assert(pidFilePath, "a filePath for the pid file is required");
-    assert(this.#pid, "cannot use DaemonPID without a pid");
+    assert(pidFilePath, 'a filePath for the pid file is required');
+    assert(this.#pid, 'cannot use DaemonPID without a pid');
 
     this.#pidFilePath = pidFilePath;
   }
@@ -67,7 +67,7 @@ export class PidFile {
   get fileContents() {
     assert(
       this.exists,
-      `pid file ${this.#pidFilePath} does not exist, so it cannot be read.`,
+      `pid file ${this.#pidFilePath} does not exist, so it cannot be read.`
     );
 
     let buffer = fsSync.readFileSync(this.#pidFilePath);
@@ -104,7 +104,7 @@ export class PidFile {
   get startedAt() {
     assert(
       isRunning(this.pid),
-      `Process @ ${this.pid} is not running, so we can't ask the OS what the start time is.`,
+      `Process @ ${this.pid} is not running, so we can't ask the OS what the start time is.`
     );
     return processStartedAt(this.pid);
   }
@@ -173,7 +173,7 @@ export class PidFile {
       pid: this.#pid,
       timestamp: ISODate(),
       command: `${initiator} ${script}`,
-      data: data ?? "",
+      data: data ?? '',
     });
 
     let folder = path.dirname(this.#pidFilePath);
