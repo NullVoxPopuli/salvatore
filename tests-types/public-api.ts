@@ -8,6 +8,18 @@ import type { SignalConstants } from 'node:os';
 expectTypeOf<ConstructorParameters<typeof Daemon>>().toMatchTypeOf<
   [string, object]
 >();
+expectTypeOf<ConstructorParameters<typeof Daemon>>().toEqualTypeOf<
+  [
+    string,
+    {
+      pidFilePath: string;
+      runWith?: string;
+      timeout?: number;
+      logFile?: string;
+      restartWhen?: () => boolean;
+    },
+  ]
+>();
 // getters
 expectTypeOf<Daemon['info']>().toEqualTypeOf<{
   pid: number;

@@ -23,11 +23,11 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./src/index.d.ts",
+      "types": "./declarations/index.d.ts",
       "default": "./src/index.js"
     },
     "./pid": {
-      "types": "./src/pid.d.ts",
+      "types": "./declarations/pid.d.ts",
       "default": "./src/pid.js"
     },
     "./__private__/*": {
@@ -37,17 +37,22 @@
   "typesVersions": {
     "*": {
       "*": [
-        "./src/index.d.ts"
+        "./declarations/index.d.ts"
       ]
     }
   },
-  "types": "./src/index.d.ts",
+  "types": "./declarations/index.d.ts",
   "files": [
-    "src"
+    "src",
+    "declarations"
   ],
   "scripts": {
+    "prepare": "pnpm build",
+    "prepack": "pnpm build",
+    "build": "tsc --declaration --declarationDir ./declarations --emitDeclarationOnly --noEmit false",
     "format": "prettier --write .",
     "lint": "concurrently 'pnpm:lint:*'",
+    "lint:types": "tsc --noEmit",
     "lint:package": "publint",
     "lint:prettier": "prettier --check .",
     "lint:published-types": "attw --pack . --ignore-rules cjs-resolves-to-esm --ignore-rules no-resolution",
