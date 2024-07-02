@@ -95,6 +95,11 @@ export class Daemon {
     return this.info;
   };
 
+  /**
+   * Stop the daemon if it's running.
+   *
+   * Note that it is the daemon's responsibility to clean up the pidfile.
+   */
   stop = async () => {
     assert(
       this.info.pid !== process.pid,
@@ -117,6 +122,17 @@ export class Daemon {
     );
   };
 
+  /**
+   * Get information about the Daemon, regardless of if it's running or not.
+   *
+   * @returns {{
+   *   pid: number;
+   *   data: any;
+   *   command: string;
+   *   startedAt: Date | null;
+   *   isRunning: boolean;
+   * }}
+   */
   get info() {
     let isRunning = this.#pidFile.isRunning;
     let startedAt = isRunning ? this.#pidFile.startedAt : null;

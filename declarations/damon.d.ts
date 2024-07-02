@@ -24,8 +24,19 @@ export class Daemon {
      */
     ensureStarted: () => Promise<Daemon["info"]>;
     stop: () => Promise<void>;
+    /**
+     * Get information about the Daemon, regardless of if it's running or not.
+     *
+     * @returns {{
+     *   pid: number;
+     *   data: any;
+     *   command: string;
+     *   startedAt: Date | null;
+     *   isRunning: boolean;
+     * }}
+     */
     get info(): {
-        pid: any;
+        pid: number;
         data: any;
         command: string;
         startedAt: Date | null;
