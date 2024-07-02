@@ -34,6 +34,14 @@
       "default": "./src/*.js"
     }
   },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./src/index.d.ts"
+      ]
+    }
+  },
+  "types": "./src/index.d.ts",
   "files": [
     "src"
   ],
