@@ -26,6 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: wyvox/action-setup-pnpm@v3
+      - run: pnpm build
       - run: pnpm test
         working-directory: ./tests-types
 
