@@ -63,6 +63,13 @@ export class PidFile {
 
   /**
    * Retrieves the parsed contents of the pid file with no checking or processing.
+   *
+   * @returns {{
+   *  pid: number;
+   *  timestamp: string;
+   *  data: any;
+   *  command: string;
+   * }}
    */
   get fileContents() {
     assert(
@@ -79,6 +86,8 @@ export class PidFile {
 
   /**
    * Retrieves the time in milliseconds the process referenced by the pid file has been running.
+   *
+   * @returns {number}
    */
   get uptime() {
     let now = Date.now();

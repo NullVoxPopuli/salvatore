@@ -23,6 +23,11 @@ export class Daemon {
      * @returns {Promise<Daemon['info']>}
      */
     ensureStarted: () => Promise<Daemon["info"]>;
+    /**
+     * Stop the daemon if it's running.
+     *
+     * Note that it is the daemon's responsibility to clean up the pidfile.
+     */
     stop: () => Promise<void>;
     /**
      * Get information about the Daemon, regardless of if it's running or not.

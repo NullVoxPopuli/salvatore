@@ -12,7 +12,7 @@ export class PidFile {
     /**
      * Retrieves the process-id of the referenced process.
      */
-    get pid(): any;
+    get pid(): number;
     /**
      * Returns true if the pid file has been written
      */
@@ -23,10 +23,24 @@ export class PidFile {
     get data(): any;
     /**
      * Retrieves the parsed contents of the pid file with no checking or processing.
+     *
+     * @returns {{
+     *  pid: number;
+     *  timestamp: string;
+     *  data: any;
+     *  command: string;
+     * }}
      */
-    get fileContents(): any;
+    get fileContents(): {
+        pid: number;
+        timestamp: string;
+        data: any;
+        command: string;
+    };
     /**
      * Retrieves the time in milliseconds the process referenced by the pid file has been running.
+     *
+     * @returns {number}
      */
     get uptime(): number;
     /**
