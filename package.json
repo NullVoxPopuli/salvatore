@@ -52,6 +52,7 @@
     "build": "tsc --declaration --declarationDir ./declarations --emitDeclarationOnly --noEmit false",
     "format": "prettier --write .",
     "lint": "concurrently 'pnpm:lint:*'",
+    "lint:types": "tsc --noEmit",
     "lint:package": "publint",
     "lint:prettier": "prettier --check .",
     "lint:published-types": "attw --pack . --ignore-rules cjs-resolves-to-esm --ignore-rules no-resolution",
