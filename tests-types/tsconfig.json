@@ -1,0 +1,6 @@
+{
+  "extends": ["@tsconfig/strictest", "@tsconfig/node22"],
+  "compilerOptions": {
+    "allowImportingTsExtensions": true
+  }
+}

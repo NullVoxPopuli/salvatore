@@ -12,7 +12,12 @@ export class PidFile {
   /**
    * Retrieves the parsed contents of the pid file with no checking or processing.
    */
-  get fileContents(): { pid: number; timestamp: string; data: any };
+  get fileContents(): {
+    pid: number;
+    timestamp: string;
+    data: any;
+    command: string;
+  };
 
   /**
    * Retrieves the process-id of the referenced process.

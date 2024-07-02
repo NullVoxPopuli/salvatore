@@ -1,0 +1,21 @@
+{
+  "name": "tests-types",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "tsc --noEmit",
+    "start": "pnpm run test --watch"
+  },
+  "keywords": [],
+  "type": "module",
+  "author": "NullVoxPopuli",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@tsconfig/node22": "^22.0.0",
+    "@tsconfig/strictest": "^2.0.5",
+    "expect-type": "^0.19.0",
+    "salvatore": "workspace:*",
+    "typescript": "^5.5.2"
+  }
+}
