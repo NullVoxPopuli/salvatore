@@ -1,0 +1,42 @@
+/**
+ * @typedef {object} Options
+ * @property {string} pidFilePath
+ * @property {string} [ runWith ]
+ * @property {number} [ timeout ]
+ * @property {string} [logFile]
+ * @property {() => boolean} [ restartWhen ]
+ */
+/**
+ * Allows managing a js script as a daemon
+ */
+export class Daemon {
+    /**
+     * @param {string} scriptPath
+     * @param {Options} options
+     */
+    constructor(scriptPath: string, options: Options);
+    /**
+     * Ensures a process has started at the given script path.
+     *
+     * Will error if the pid file did not get created or if the process didn't start or exited too early.
+     *
+     * @returns {Promise<Daemon['info']>}
+     */
+    ensureStarted: () => Promise<Daemon["info"]>;
+    stop: () => Promise<void>;
+    get info(): {
+        pid: any;
+        data: any;
+        command: string;
+        startedAt: Date | null;
+        isRunning: boolean;
+    };
+    #private;
+}
+export type Options = {
+    pidFilePath: string;
+    runWith?: string;
+    timeout?: number;
+    logFile?: string;
+    restartWhen?: () => boolean;
+};

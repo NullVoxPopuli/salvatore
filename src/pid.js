@@ -1,12 +1,12 @@
-import path from 'node:path';
-import assert from 'node:assert';
-import fsSync from 'node:fs';
-import process from 'node:process';
+import path from "node:path";
+import assert from "node:assert";
+import fsSync from "node:fs";
+import process from "node:process";
 import {
   isRunning,
   processCommand,
   processStartedAt,
-} from './process-utils.js';
+} from "./process-utils.js";
 
 /**
  * 1s seems to be the minimum granularity we can check for.
@@ -34,46 +34,40 @@ export class PidFile {
    * @param {string} pidFilePath
    */
   constructor(pidFilePath) {
-    assert(pidFilePath, 'a filePath for the pid file is required');
-    assert(this.#pid, 'cannot use DaemonPID without a pid');
+    assert(pidFilePath, "a filePath for the pid file is required");
+    assert(this.#pid, "cannot use DaemonPID without a pid");
 
     this.#pidFilePath = pidFilePath;
   }
 
+  /**
+   * Retrieves the process-id of the referenced process.
+   */
+  get pid() {
+    return this.#readPidFile().pid;
+  }
+
+  /**
+   * Returns true if the pid file has been written
+   */
   get exists() {
     return fsSync.existsSync(this.#pidFilePath);
   }
 
   /**
-   * Writes out the PID file with the optional JSON-able data attached. Calls the
-   * callback function with (err).
-   *
-   * @param {unknown} data
+   * Reads the PID file's data from the filesystem.
    */
-  write = (data) => {
-    let [initiator, script] = process.argv;
-
-    let json = JSON.stringify({
-      pid: this.#pid,
-      timestamp: ISODate(),
-      command: `${initiator} ${script}`,
-      data: data ?? '',
-    });
-
-    let folder = path.dirname(this.#pidFilePath);
-
-    fsSync.mkdirSync(folder, { recursive: true });
-    fsSync.writeFileSync(this.#pidFilePath, json);
-  };
-
   get data() {
     return this.#readPidFile().data;
   }
 
+  /**
+   * Retrieves the parsed contents of the pid file with no checking or processing.
+   */
   get fileContents() {
     assert(
       this.exists,
-      `pid file ${this.#pidFilePath} does not exist, so it cannot be read.`
+      `pid file ${this.#pidFilePath} does not exist, so it cannot be read.`,
     );
 
     let buffer = fsSync.readFileSync(this.#pidFilePath);
@@ -83,44 +77,43 @@ export class PidFile {
     return pidData;
   }
 
-  #readPidFile = () => {
-    let pidData = this.fileContents;
-
-    this.#pid = pidData.pid;
-
-    return pidData;
-  };
-
-  delete = () => {
-    if (this.exists) {
-      fsSync.rmSync(this.#pidFilePath);
-    }
-  };
-
+  /**
+   * Retrieves the time in milliseconds the process referenced by the pid file has been running.
+   */
   get uptime() {
     let now = Date.now();
 
     return now - this.startedAt.getTime();
   }
 
+  /**
+   * The command that the PID is related to.
+   * This, combined with startedAt help deter
+   *
+   * @returns {string}
+   */
   get command() {
     return this.fileContents.command;
   }
 
+  /**
+   * Retrieves a Date object representing the date and time the process referenced by the pid file was started.
+   *
+   * @returns {Date}
+   */
   get startedAt() {
     assert(
       isRunning(this.pid),
-      `Process @ ${this.pid} is not running, so we can't ask the OS what the start time is.`
+      `Process @ ${this.pid} is not running, so we can't ask the OS what the start time is.`,
     );
     return processStartedAt(this.pid);
   }
 
-  get #recordedStartedTime() {
-    let pidData = this.#readPidFile();
-
-    return new Date(pidData.timestamp).getTime();
-  }
-
+  /**
+   * if the associated process is currently running.
+   *
+   * @returns {boolean}
+   */
   get isRunning() {
     if (!this.exists) {
       return false;
@@ -159,11 +152,58 @@ export class PidFile {
   }
 
   /**
-   * @param {number} signal
+   * Sends the passed signal to the process (basically a shortcut for process.kill).
+   *
+   * @param {number | (keyof import("node:os").SignalConstants & string)} signal
    */
   kill = (signal) => process.kill(this.#pid, signal);
 
-  get pid() {
-    return this.#readPidFile().pid;
+  /**
+   * Creates the PID file and writes it to the filesystem.
+   *
+   * Does not start any process.
+   *
+   * @param {unknown} [ data ]
+   * @returns {void}
+   */
+  write = (data) => {
+    let [initiator, script] = process.argv;
+
+    let json = JSON.stringify({
+      pid: this.#pid,
+      timestamp: ISODate(),
+      command: `${initiator} ${script}`,
+      data: data ?? "",
+    });
+
+    let folder = path.dirname(this.#pidFilePath);
+
+    fsSync.mkdirSync(folder, { recursive: true });
+    fsSync.writeFileSync(this.#pidFilePath, json);
+  };
+
+  /**
+   * Deletes the associated pid file.
+   *
+   * Does not stop any started process.
+   */
+  delete = () => {
+    if (this.exists) {
+      fsSync.rmSync(this.#pidFilePath);
+    }
+  };
+
+  get #recordedStartedTime() {
+    let pidData = this.#readPidFile();
+
+    return new Date(pidData.timestamp).getTime();
   }
+
+  #readPidFile = () => {
+    let pidData = this.fileContents;
+
+    this.#pid = pidData.pid;
+
+    return pidData;
+  };
 }

@@ -20,8 +20,6 @@ jobs:
       - uses: wyvox/action-setup-pnpm@v3
       - run: pnpm lint
 
-
-
   type-test: 
     name: Type Tests 
     runs-on: ubuntu-latest 
@@ -30,7 +28,6 @@ jobs:
       - uses: wyvox/action-setup-pnpm@v3
       - run: pnpm test
         working-directory: ./tests-types
-
 
   test: 
     name: Test on ${{ matrix.os }}

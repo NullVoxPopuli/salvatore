@@ -1,6 +1,9 @@
 {
   "extends": ["@tsconfig/strictest", "@tsconfig/node22"],
   "compilerOptions": {
+    "rootDir": "./src/",
+    "noEmit": true,
     "allowImportingTsExtensions": true
-  }
+  },
+  "include": ["./src/*"]
 }
