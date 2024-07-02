@@ -2,8 +2,8 @@
   "solution": {
     "salvatore": {
       "impact": "patch",
-      "oldVersion": "0.1.0",
-      "newVersion": "0.1.1",
+      "oldVersion": "0.1.1",
+      "newVersion": "0.1.2",
       "constraints": [
         {
           "impact": "patch",
@@ -16,5 +16,5 @@
       "oldVersion": "1.0.0"
     }
   },
-  "description": "## Release (2024-07-02)\n\nsalvatore 0.1.1 (patch)\n\n#### :bug: Bug Fix\n* `salvatore`\n  * [#7](https://github.com/NullVoxPopuli/salvatore/pull/7) Add types tests, supporting mare varied TS environments ([@NullVoxPopuli](https://github.com/NullVoxPopuli))\n\n#### Committers: 1\n- [@NullVoxPopuli](https://github.com/NullVoxPopuli)\n"
+  "description": "## Release (2024-07-02)\n\nsalvatore 0.1.2 (patch)\n\n#### :bug: Bug Fix\n* `salvatore`\n  * [#9](https://github.com/NullVoxPopuli/salvatore/pull/9) Build and Publish actual Declarations ([@NullVoxPopuli](https://github.com/NullVoxPopuli))\n\n#### Committers: 1\n- [@NullVoxPopuli](https://github.com/NullVoxPopuli)\n"
 }

@@ -2,6 +2,17 @@
 
 ## Release (2024-07-02)
 
+salvatore 0.1.2 (patch)
+
+#### :bug: Bug Fix
+* `salvatore`
+  * [#9](https://github.com/NullVoxPopuli/salvatore/pull/9) Build and Publish actual Declarations ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### Committers: 1
+- [@NullVoxPopuli](https://github.com/NullVoxPopuli)
+
+## Release (2024-07-02)
+
 salvatore 0.1.1 (patch)
 
 #### :bug: Bug Fix
