@@ -1,5 +1,16 @@
 # Changelog
 
+## Release (2024-07-25)
+
+salvatore 0.1.3 (patch)
+
+#### :house: Internal
+* `salvatore`
+  * [#11](https://github.com/NullVoxPopuli/salvatore/pull/11) set package-manager ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### Committers: 1
+- [@NullVoxPopuli](https://github.com/NullVoxPopuli)
+
 ## Release (2024-07-02)
 
 salvatore 0.1.2 (patch)
