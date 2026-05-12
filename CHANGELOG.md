@@ -1,5 +1,21 @@
 # Changelog
 
+## Release (2026-05-12)
+
+* salvatore 0.2.0 (minor)
+
+#### :rocket: Enhancement
+* `salvatore`
+  * [#13](https://github.com/NullVoxPopuli/salvatore/pull/13) Add `<PID#updateOrWrite>` ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### :house: Internal
+* `salvatore`
+  * [#14](https://github.com/NullVoxPopuli/salvatore/pull/14) pnpm dlx create-release-plan-setup@latest --update ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+  * [#11](https://github.com/NullVoxPopuli/salvatore/pull/11) set package-manager ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### Committers: 1
+- [@NullVoxPopuli](https://github.com/NullVoxPopuli)
+
 ## Release (2024-07-02)
 
 salvatore 0.1.2 (patch)
