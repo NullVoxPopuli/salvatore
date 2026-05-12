@@ -34,6 +34,7 @@
       "default": "./src/*.js"
     }
   },
+  "types": "./declarations/index.d.ts",
   "typesVersions": {
     "*": {
       "*": [
@@ -41,21 +42,20 @@
       ]
     }
   },
-  "types": "./declarations/index.d.ts",
   "files": [
     "src",
     "declarations"
   ],
   "scripts": {
-    "prepare": "pnpm build",
-    "prepack": "pnpm build",
     "build": "tsc --declaration --declarationDir ./declarations --emitDeclarationOnly --noEmit false",
     "format": "prettier --write .",
     "lint": "concurrently 'pnpm:lint:*'",
-    "lint:types": "tsc --noEmit",
     "lint:package": "publint",
     "lint:prettier": "prettier --check .",
     "lint:published-types": "attw --pack . --ignore-rules cjs-resolves-to-esm --ignore-rules no-resolution",
+    "lint:types": "tsc --noEmit",
+    "prepack": "pnpm build",
+    "prepare": "pnpm build",
     "test": "vitest"
   },
   "devDependencies": {
@@ -68,16 +68,16 @@
     "execa": "^9.3.0",
     "prettier": "^3.3.2",
     "publint": "^0.2.8",
-    "release-plan": "^0.9.0",
+    "release-plan": "^0.18.0",
     "typescript": "^5.5.2",
     "vitest": "^1.6.0"
   },
+  "packageManager": "pnpm@9.6.0",
   "engines": {
     "node": ">= 18"
   },
   "volta": {
     "node": "22.3.0",
     "pnpm": "9.6.0"
-  },
-  "packageManager": "pnpm@9.6.0"
+  }
 }
