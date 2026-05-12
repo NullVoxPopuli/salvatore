@@ -73,6 +73,108 @@ describe('PidFile', () => {
     });
   });
 
+  describe('.updateOrWrite', () => {
+    test('with no initial data, a new file is created', () => {
+      expect(daemonPid.exists).toBe(false);
+
+      daemonPid.updateOrWrite((existing) => {
+        expect(existing).toBe(null);
+
+        return { success: true };
+      });
+
+      expect(daemonPid.exists).toBe(true);
+      expect(daemonPid.data.success).toBe(true);
+    });
+
+    test('with initial data, the data can be replaced', () => {
+      daemonPid.write({
+        preexisting: true,
+      });
+      expect(daemonPid.exists).toBe(true);
+      expect(daemonPid.data).toHaveProperty('preexisting');
+
+      daemonPid.updateOrWrite((existing) => {
+        expect(existing).not.toBe(null);
+
+        return { success: true };
+      });
+
+      expect(daemonPid.exists).toBe(true);
+      expect(daemonPid.data).not.toHaveProperty('preexisting');
+      expect(daemonPid.data.success).toBe(true);
+    });
+
+    test('with initial data, the data can be merged', () => {
+      daemonPid.write({
+        preexisting: true,
+      });
+      expect(daemonPid.exists).toBe(true);
+      expect(daemonPid.data).toHaveProperty('preexisting');
+
+      daemonPid.updateOrWrite((existing) => {
+        return { ...existing, success: true };
+      });
+
+      expect(daemonPid.exists).toBe(true);
+      expect(daemonPid.data.preexisting).toBe(true);
+      expect(daemonPid.data.success).toBe(true);
+    });
+
+    test('with initial data, the data can cleared', () => {
+      daemonPid.write({
+        preexisting: true,
+      });
+      expect(daemonPid.exists).toBe(true);
+      expect(daemonPid.data).toHaveProperty('preexisting');
+
+      daemonPid.updateOrWrite((existing) => {
+        return {
+          ...existing,
+          one: 1,
+        };
+      });
+      daemonPid.updateOrWrite((existing) => {
+        return {
+          ...existing,
+          two: 2,
+        };
+      });
+      daemonPid.updateOrWrite((existing) => {
+        return {
+          ...existing,
+          three: 3,
+        };
+      });
+
+      expect(daemonPid.exists).toBe(true);
+      expect(daemonPid.data).toMatchInlineSnapshot(`
+        {
+          "one": 1,
+          "preexisting": true,
+          "three": 3,
+          "two": 2,
+        }
+      `);
+    });
+
+    test('successive calls to update non-destructively merge data', () => {
+      daemonPid.write({
+        preexisting: true,
+      });
+      expect(daemonPid.exists).toBe(true);
+      expect(daemonPid.data).toHaveProperty('preexisting');
+
+      daemonPid.updateOrWrite((existing) => {
+        return { ...existing, success: true };
+      });
+
+      expect(daemonPid.exists).toBe(true);
+      expect(daemonPid.data.preexisting).toBe(true);
+      expect(daemonPid.data.success).toBe(true);
+    });
+  });
+
   describe('.uptime', () => {
     test('is a number', () => {
       daemonPid.write();

@@ -47,6 +47,10 @@ export class PidFile {
     return this.#readPidFile().pid;
   }
 
+  get location() {
+    return this.#pidFilePath;
+  }
+
   /**
    * Returns true if the pid file has been written
    */
@@ -189,6 +193,34 @@ export class PidFile {
 
     fsSync.mkdirSync(folder, { recursive: true });
     fsSync.writeFileSync(this.#pidFilePath, json);
+  };
+
+  /**
+   * Update or write the PID file to the filesystem.
+   * Updates the data with `updater` if the PID file already exists.
+   *
+   * @param {((data: unknown) => unknown) | unknown} dataOrFunction
+   * @returns {void}
+   */
+  updateOrWrite = (dataOrFunction) => {
+    if (!this.exists) {
+      let newData =
+        typeof dataOrFunction === 'function'
+          ? dataOrFunction(null)
+          : dataOrFunction;
+      this.write(newData);
+
+      return;
+    }
+
+    let existing = this.data;
+
+    let newData =
+      typeof dataOrFunction === 'function'
+        ? dataOrFunction(existing)
+        : dataOrFunction;
+
+    this.write(newData);
   };
 
   /**

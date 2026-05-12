@@ -13,6 +13,7 @@ export class PidFile {
      * Retrieves the process-id of the referenced process.
      */
     get pid(): number;
+    get location(): string;
     /**
      * Returns true if the pid file has been written
      */
@@ -77,6 +78,14 @@ export class PidFile {
      * @returns {void}
      */
     write: (data?: unknown) => void;
+    /**
+     * Update or write the PID file to the filesystem.
+     * Updates the data with `updater` if the PID file already exists.
+     *
+     * @param {((data: unknown) => unknown) | unknown} dataOrFunction
+     * @returns {void}
+     */
+    updateOrWrite: (dataOrFunction: ((data: unknown) => unknown) | unknown) => void;
     /**
      * Deletes the associated pid file.
      *
