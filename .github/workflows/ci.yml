@@ -20,9 +20,9 @@ jobs:
       - uses: wyvox/action-setup-pnpm@v3
       - run: pnpm lint
 
-  type-test: 
-    name: Type Tests 
-    runs-on: ubuntu-latest 
+  type-test:
+    name: Type Tests
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: wyvox/action-setup-pnpm@v3
@@ -42,7 +42,7 @@ jobs:
           - os: ubuntu-24.04-arm
             arch: arm64
           # macOS
-          - os: macos-13
+          - os: macos-26-intel
             arch: x86_64
           - os: macos-latest
             arch: arm64
