@@ -20,9 +20,9 @@ jobs:
       - uses: wyvox/action-setup-pnpm@v3
       - run: pnpm lint
 
-  type-test: 
-    name: Type Tests 
-    runs-on: ubuntu-latest 
+  type-test:
+    name: Type Tests
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: wyvox/action-setup-pnpm@v3
@@ -30,13 +30,23 @@ jobs:
       - run: pnpm test
         working-directory: ./tests-types
 
-  test: 
-    name: Test on ${{ matrix.os }}
+  test:
+    name: Test on ${{ matrix.os }} (${{ matrix.arch }})
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }} 
+        include:
+          # Linux
+          - os: ubuntu-latest
+            arch: x86_64
+          - os: ubuntu-24.04-arm
+            arch: arm64
+          # macOS
+          - os: macos-26-intel
+            arch: x86_64
+          - os: macos-latest
+            arch: arm64
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: wyvox/action-setup-pnpm@v3
