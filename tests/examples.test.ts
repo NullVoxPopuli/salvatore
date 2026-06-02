@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect } from 'vitest';
 import { isWithinTolerance, scenario, stopExamples, wait } from './helpers.ts';
 import { isRunning } from '../src/process-utils.js';
 import { Daemon } from '../src/damon.js';
+import { PidFile } from '../src/pid.js';
 import { assertIsRunning } from './assertions.ts';
 
 describe('Examples', () => {
@@ -47,17 +48,18 @@ describe('Examples', () => {
         pidFile,
       }) => {
         expect(pidFile.pid).not.toEqual(process.pid);
-        assertIsRunning(pidFile.pid);
+        assertIsRunning(pidFile);
       });
 
       test('when a process is already started, it just returns the info', async ({
         start,
+        pidFile,
       }) => {
         let originalInfo = await start();
-        assertIsRunning(originalInfo.pid, `first start`);
+        assertIsRunning(pidFile);
 
         let newInfo = await start();
-        assertIsRunning(newInfo.pid, `after second start`);
+        assertIsRunning(pidFile);
 
         expect(newInfo.startedAt).toStrictEqual(originalInfo.startedAt);
         expect(newInfo.pid).toStrictEqual(originalInfo.pid);
@@ -69,18 +71,22 @@ describe('Examples', () => {
     describe('stop', () => {
       let info: Awaited<Daemon>;
 
-      async function setup(start: () => ReturnType<Daemon['ensureStarted']>) {
+      async function setup(
+        start: () => ReturnType<Daemon['ensureStarted']>,
+        pidFile: PidFile
+      ) {
         info = await start();
         console.log(info);
 
         expect(info.pid).not.toEqual(process.pid);
-        assertIsRunning(info.pid);
+        assertIsRunning(pidFile);
       }
 
-      test('process can be stopped', async ({ start, stop }) => {
-        await setup(start);
+      test('process can be stopped', async ({ start, stop, pidFile }) => {
+        await setup(start, pidFile);
         await stop();
 
+        await wait(1000);
         expect(isRunning(info.pid)).toBe(false);
       });
     });
