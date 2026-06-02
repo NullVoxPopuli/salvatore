@@ -1,4 +1,11 @@
 /**
+ * @param {number} ms duration to sleep
+ */
+async function sleep(ms) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
  *  @param {() => boolean } conditionFn
  *  @param {string | (() => string)} rejectMessage
  *  @param {number} timeout
@@ -13,23 +20,36 @@ export async function waitFor(
   /** @type {ReturnType<typeof setTimeout>} */
   let errorTimeout;
 
+  let waiting = true;
+
   await Promise.race([
     new Promise((_, reject) => {
       errorTimeout = setTimeout(() => {
         let msg =
           typeof rejectMessage === 'function' ? rejectMessage() : rejectMessage;
+        waiting = false;
         reject(msg);
       }, timeout);
     }),
-    new Promise((resolve) => {
-      let interval = setInterval(() => {
+    new Promise(async (resolve) => {
+      /**
+       * while loop here is to only check the conditionFn
+       * as fast as the OS will let us.
+       *
+       * (previously this used setInterval, which could possibly become problematic if the conditionFn
+       *  took longer to run than the checkEvery ms time)
+       */
+      while (waiting) {
         let cond = conditionFn();
         if (cond) {
-          clearInterval(interval);
+          waiting = false;
           clearTimeout(errorTimeout);
           resolve(null);
+          break;
         }
-      }, checkEvery);
+
+        await sleep(checkEvery);
+      }
     }),
   ]);
 }
