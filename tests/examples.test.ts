@@ -42,14 +42,6 @@ describe('Examples', () => {
   });
 
   scenario('examples/daemon', (test) => {
-    function assertIsRunning(pid: number, msg = '') {
-      if (isRunning(pid)) {
-        return expect('Process is running').toBeTruthy();
-      }
-
-      expect(`${pid} is not running. ${msg}`).toBeFalsy();
-    }
-
     describe('ensureStarted', () => {
       test('it starts a process that was not started previously', async ({
         pidFile,

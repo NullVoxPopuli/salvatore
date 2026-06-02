@@ -6,7 +6,7 @@ async function sleep(ms) {
 }
 
 /**
- *  @param {() => boolean | (() => Promise<boolean>)} conditionFn
+ *  @param {(() => boolean) | (() => Promise<boolean>)} conditionFn
  *  @param {string | (() => string)} rejectMessage
  *  @param {number} timeout
  *  @param {number} [checkEvery]
@@ -26,7 +26,7 @@ export async function waitFor(
     /**
      * This rejecting promise is really only needed if
      * the first iteration of the while loop in the success branch
-     * never finishes.
+     * never finishes (or if the other branch is never true).
      */
     new Promise((_, reject) => {
       errorTimeout = setTimeout(() => {
@@ -45,7 +45,13 @@ export async function waitFor(
        *  took longer to run than the checkEvery ms time)
        */
       while (waiting) {
-        let cond = await conditionFn();
+        let cond = false;
+        try {
+          cond = await conditionFn();
+        } catch {
+          // if cond fails, don't exit the loop
+          // we need to keep checking every seep(time)
+        }
         if (cond) {
           waiting = false;
           clearTimeout(errorTimeout);
