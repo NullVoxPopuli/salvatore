@@ -1,5 +1,20 @@
 # Changelog
 
+## Release (2026-06-02)
+
+* salvatore 0.2.1 (patch)
+
+#### :bug: Bug Fix
+* `salvatore`
+  * [#17](https://github.com/NullVoxPopuli/salvatore/pull/17) Make waitFor resiliant to busy systems ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### :house: Internal
+* `salvatore`
+  * [#15](https://github.com/NullVoxPopuli/salvatore/pull/15) Test on ARM ([@NullVoxPopuli](https://github.com/NullVoxPopuli))
+
+#### Committers: 1
+- [@NullVoxPopuli](https://github.com/NullVoxPopuli)
+
 ## Release (2026-05-12)
 
 * salvatore 0.2.0 (minor)
